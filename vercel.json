@@ -1,18 +1,16 @@
 {
-  "version": 2,
-  "build": {
-    "env": {
-      "PYTHONUNBUFFERED": "1"
-    }
-  },
-  "routes": [
-    {
-      "src": "/static/(.*)",
-      "dest": "/staticfiles/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "crm_main.wsgi:application"
-    }
-  ]
-}
+    "version": 2,
+    "builds": [
+      {
+        "src": "crm_main/wsgi.py",
+        "use": "@vercel/python"
+      }
+    ],
+    "routes": [
+      {
+        "src": "/(.*)",
+        "dest": "crm_main/wsgi.py"
+      }
+    ]
+  }
+  
