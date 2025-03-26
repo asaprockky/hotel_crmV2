@@ -1,0 +1,147 @@
+/* GLOBAL RESETS */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+  }
+  
+  /* BODY WRAPPER */
+  body {
+    background-color: #0B1326; /* Dark navy background for main content */
+    color: #FFFFFF;
+  }
+  
+  /* LAYOUT WRAPPER */
+  .wrapper {
+    display: flex;
+  }
+  
+
+  /* MAIN CONTENT */
+  .main-content {
+    margin-left: 280px; /* Same width as sidebar */
+    padding: 40px;
+    width: 100%;
+    min-height: 100vh;
+    background-color: #0B1326;
+  }
+  
+  /* WELCOME TITLE */
+  .welcome-title {
+    font-size: 2rem;
+    color: #FFFFFF;
+  }
+  
+  .highlight {
+    color: #CDA274; /* Gold-ish color for highlight */
+  }
+  
+  /* TOP CARDS SECTION */
+  .top-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-top: 30px;
+  }
+  
+  .card {
+    background-color: #EEEEEE; 
+    border-radius: 30px;
+    padding: 20px;
+    flex: 1 1 300px; /* Flexible width, min 300px */
+    min-height: 150px;
+    display: flex;
+    flex-direction: column;
+    color: #030D28;
+    height: 200px;
+    
+  }
+  
+  /* CARD HEADERS */
+  .card-title {
+    align-items: center;
+    font-weight: bold;
+    font-size: 1.1rem;
+  }
+  
+  .card-subtitle {
+    font-size: 1.1rem;
+    color: #030D28;
+    margin-left: auto;
+    font-weight: bold;
+  }
+  
+  .card-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 8px;
+  }
+  
+  /* MINI CALENDAR (OPTIONAL) */
+  .mini-calendar {
+    margin-top: 15px;
+  }
+  
+  .days, .dates {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+    font-size: 1rem;
+    text-align: center;
+    color: #030D28;
+    padding: 10px;
+  }
+  
+  .today {
+    color: #CDA274;
+    font-weight: bold;
+  }
+  
+  /* NOTIFICATIONS */
+  .notifications-card .notification-list {
+    list-style: none;
+    margin-top: 15px;
+    font-size: 0.9rem;
+    color: #030D28;
+  }
+  
+  .notifications-card .notification-list li {
+    margin: 5px 0;
+  }
+  /* STATS SECTION */
+.stats-cards {
+    margin-top: 50px;
+  }
+  
+  .stat-card {
+    background-color: #EEEEEE;
+    border-radius: 30px;
+    padding: 20px;
+    text-align: center;
+    color: #030D28;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: 300px;
+    width: 401;
+  }
+  
+  .stat-item {
+    flex: 1;
+  }
+  
+  .stat-circle {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 10px;
+    border-radius: 50%;
+    background-color: transparent;
+    border: 4px solid #CDA274; /* Gold border */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+  }
+  

@@ -1,0 +1,43 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Room Reservation Details</title>
+    <link rel="stylesheet" href="{% static 'admin/css/edit_room_page.css' %}" />
+</head>
+<body>
+
+    <div class="container">
+        {% include 'details/navbar.html' %}
+        <h1>Room {{ room.room_number }} - {{ room.room_type }}</h1>
+        <p class="price">Price per night: <strong class="dark">${{ room.price }}</strong></p>
+
+        <div class="reservations">
+            {% if reservation_data %}
+                {% for data in reservation_data %}
+                    <div class="card">
+                        <h2>Reservation by {{ data.client.full_name }}</h2>
+                        <p><strong>Passport:</strong> {{ data.client.passport_number }}</p>
+                        <p><strong>Check-in:</strong> {{ data.check_in }}</p>
+                        <p><strong>Check-out:</strong> {{ data.check_out|default:"Not checked out" }}</p>
+                        <p><strong>Balance:</strong> ${{ data.balance }}</p>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="no-reservations">No reservations found for this room.</p>
+            {% endif %}
+        </div>
+
+        <a href="/close_room_list/" class="btn">Go Back</a>
+        <form action="{% url 'close_room' room.id %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn">Close Room</button>
+        </form>
+        
+
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,40 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Room Cards</title>
+    <link rel="stylesheet" href="{% static 'admin/css/room_list.css' %}" />
+</head>
+<body>
+    <div class="container">
+        {% include 'details/navbar.html' %}
+
+        <div class="col-md-9 main-content">
+            <h1 class="title">List of <span class="highlight">available rooms</span></h1>
+            <div class="room-container">
+                {% for room in rooms %}
+                <div class="room-card {% if room.not_available  %}available{% else %}unavailable{% endif %}">
+                    <div class="room-info">
+                        <h4>Room №{{ room.room_number }}</h4>
+                        <p class="room-type">{{ room.room_type }}</p>
+                    </div>
+                    <div class="room-price {% if room.is_available %}price-available{% else %}price-unavailable{% endif %}">
+                        <a href="{% if room.is_available %}{% url 'reserve_room' room.id %}{% else %}#{% endif %}" 
+                           class="room-price-link {% if not room.is_available %}disabled-link{% endif %}">
+                            <p>${{ room.price }} per night</p>
+                        </a>
+                    </div>
+                    
+                </div>
+                {% endfor %}
+            </div>
+            
+        </div>
+        
+    </div>
+</body>
+</html>

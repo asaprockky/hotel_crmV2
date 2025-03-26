@@ -1,0 +1,212 @@
+
+{% load static %}
+
+{% block content %}
+<div class="stats-container">
+    <!-- Header Section -->
+    <div class="stats-header">
+        <h1>Hotel Dashboard</h1>
+        <div class="header-info">
+            <span class="hotel-name">{{ hotel.user.username }}</span>
+            <span class="current-balance">Balance: ${{ hotel.balance }}</span>
+        </div>
+    </div>
+
+    <!-- Key Metrics Grid -->
+    <div class="metrics-grid">
+        <div class="metric-card" style="background-color: #030D28;">
+            <h3>Total Clients</h3>
+            <div class="metric-value" style="color: #2BBE2A;">{{ total_clients }}</div>
+            <div class="metric-change">
+                <span class="change-positive">+{{ new_clients_week }} this week</span>
+            </div>
+        </div>
+
+        <div class="metric-card" style="background-color: #030D28;">
+            <h3>Available Rooms</h3>
+            <div class="metric-value" style="color: #FFFFFF;">{{ available_rooms }}/{{ total_rooms }}</div>
+            <div class="metric-progress">
+                <div class="progress-bar" style="width: {{ occupancy_rate }}%; background-color: #CDA274;"></div>
+            </div>
+        </div>
+
+        <div class="metric-card" style="background-color: #030D28;">
+            <h3>Active Reservations</h3>
+            <div class="metric-value" style="color: #2BBE2A;">{{ active_reservations }}</div>
+            <div class="metric-change">
+                <span class="change-negative" style="color: #F44842;">{{ ending_soon }} ending soon</span>
+            </div>
+        </div>
+
+        <div class="metric-card" style="background-color: #030D28;">
+            <h3>Total Revenue</h3>
+            <div class="metric-value" style="color: #2BBE2A;">${{ total_revenue }}</div>
+            <div class="metric-change">
+                <span class="change-positive">+${{ daily_profit }} today</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="charts-grid">
+        <div class="chart-card">
+            <h3>Monthly Profit Trend</h3>
+            <canvas id="profitChart"></canvas>
+        </div>
+        
+        <div class="chart-card">
+            <h3>Room Type Distribution</h3>
+            <canvas id="roomTypeChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Recent Activity Section -->
+    <div class="recent-activity">
+        <h3>Recent Reservations</h3>
+        <div class="activity-list">
+            {% for reservation in recent_reservations %}
+            <div class="activity-item">
+                <span class="client-name">{{ reservation.client.full_name }}</span>
+                <span class="room-number">{{ reservation.room.room_number }}</span>
+                <span class="checkin-date">{{ reservation.check_in }}</span>
+                <span class="status-indicator" style="background-color: {% if reservation.check_out %}#F44842{% else %}#2BBE2A{% endif %}"></span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<style>
+/* Base Styles */
+body {
+    background-color: #030D28;
+    color: #FFFFFF; /* Ensures text is visible on dark background */
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 20px;
+}
+
+.stats-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    color: #FFFFFF; /* Changed from #030D28 for better visibility */
+}
+
+/* Header Styles */
+.stats-header {
+    margin-bottom: 30px;
+    padding: 20px;
+    border-bottom: 2px solid #CDA274;
+}
+
+.hotel-name {
+    font-size: 24px;
+    color: #FFFFFF;
+    margin-right: 20px;
+}
+
+.current-balance {
+    font-size: 18px;
+    color: #CDA274;
+}
+
+/* Metrics Grid */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.metric-card {
+    background-color: #FFFFFF;
+    color: #FFFFFF; /* Ensures text is readable on white background */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.metric-value {
+    font-size: 32px;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+/* Progress Bar */
+.progress-bar {
+    height: 4px;
+    border-radius: 2px;
+    margin-top: 10px;
+}
+
+/* Charts Section */
+.charts-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.chart-card {
+    background-color: #FFFFFF;
+    border-radius: 10px;
+    padding: 20px;
+    color: #030D28; /* Ensures contrast on white background */
+}
+
+/* Recent Activity */
+.recent-activity {
+    background-color: #FFFFFF;
+    border-radius: 10px;
+    padding: 20px;
+    color: #030D28; /* Ensures text is readable */
+}
+
+.activity-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #EEEEEE;
+}
+
+.status-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+/* Utility Classes */
+.change-positive { color: #2BBE2A; }
+.change-negative { color: #F44842; }
+
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Sample Chart Implementation
+    const profitChart = new Chart(document.getElementById('profitChart'), {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            datasets: [{
+                label: 'Monthly Profit',
+                data: [12000, 19000, 3000, 5000, 2000, 3000],
+                borderColor: '#CDA274',
+                tension: 0.4
+            }]
+        }
+    });
+
+    const roomTypeChart = new Chart(document.getElementById('roomTypeChart'), {
+        type: 'pie',
+        data: {
+            labels: ['Standard', 'Deluxe', 'Suite'],
+            datasets: [{
+                data: [300, 150, 50],
+                backgroundColor: ['#CDA274', '#2BBE2A', '#F44842']
+            }]
+        }
+    });
+</script>
+{% endblock %}

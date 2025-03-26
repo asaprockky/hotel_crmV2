@@ -1,0 +1,57 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'admin/css/navbar.css' %}" />
+
+<div class="wrapper">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <!-- Logo / Avatar -->
+        <div class="avatar-container">
+          <!-- Replace with your actual logo/avatar image -->
+          <img src="{% static 'admin/img/operator.png' %}" alt="" class="avatar"/>
+        </div>
+        <h2>Admin Panel</h2>
+      </div>
+
+      <!-- NAVIGATION MENU -->
+      <nav>
+        <ul class="nav-list">
+          <li>
+            <a href="{% url 'main_page' %}">
+              <img src="{% static 'admin/img/main_page_icon.png' %}" alt="" class="icon"/>
+              Main Page
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'room_list' %}">
+              <img src="{% static 'admin/img/booking_icon.png' %}" alt="" class="icon"/>
+              Rooms
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'close_rooms_list' %}">
+              <img src="{% static 'admin/img/rooms_icon.png' %}" alt="" class="icon"/>
+              Reservations
+            </a>
+          </li>
+          <li>
+            <a href="/stats">
+              <img src="{% static 'admin/img/stats_icon.png' %}" alt="" class="icon"/>
+              Finance 
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'settings' %}">
+              <img src="{% static 'admin/img/settings_icon.png' %}" alt="" class="icon"/>
+              Settings
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- FOOTER -->
+      <footer class="sidebar-footer">
+        <p>Developed by Asap Rocky &amp; Ibragim Jalilov</p>
+        <p>&copy; 2024 Hotel Admin Panel | All rights reserved.</p>
+      </footer>
+    </aside>

@@ -1,0 +1,44 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+
+
+body {
+    background-color: #030D28;
+    color: white;
+    font-family: 'Montserrat', sans-serif;
+    text-align: center;
+    font-weight: 600;
+}
+
+.container {
+    margin: 0 auto; /* Center the container */
+    padding: 20px; /* Adjust as needed */
+}
+
+
+.top-buttons button {
+    background-color: #EEEEEE;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    margin: 10px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+.top-buttons :active{
+    background-color: #CDA274;
+}
+.crm-balance img {
+    vertical-align: middle;
+    margin-right: 5px;
+}
+
+.bottom-buttons {
+    margin-top: 20px;
+}
+
+.image-button {
+    width: 200px; /* Adjust as needed */
+    height: auto;
+    margin: 10px;
+    cursor: pointer;
+}

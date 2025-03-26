@@ -1,0 +1,93 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Hotel Admin Panel</title>
+  <!-- Link to the external CSS file -->
+  <link rel="stylesheet" href="{% static 'admin/css/main_page.css' %}" />
+
+
+</head>
+<body>
+ {% include 'details/navbar.html' %}
+        <!-- FOOTER -->
+        <footer class="sidebar-footer">
+          <p>Developed by Asap Rocky &amp; Ibragim Jalilov</p>
+          <p>&copy; 2024 Hotel Admin Panel | All rights reserved.</p>
+        </footer>
+      </aside>
+  
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+      {% if user.is_authenticated %}
+      <h1 class="welcome-title">
+        Welcome <span class="highlight">{{ user.first_name }}!</span>
+      </h1>
+      {% endif %}
+      <!-- TOP CARDS -->
+      <section class="top-cards">
+        <!-- Date & Time Card -->
+        <div class="card date-card">
+          <div class="card-title">
+            <img src="{% static 'admin/img/calendar_icon.png' %}" alt="" class="card-icon"/>
+            <span id="current-date"></span>
+          </div>
+          <div class="card-subtitle">
+            <img src="{% static 'admin/img/clock_icon.png' %}" alt="" class="card-icon"/>
+            <span id="current-time"></span>
+          </div>
+
+          <!-- Example mini-calendar (optional) -->
+          <div class="mini-calendar">
+            <div class="days">
+              <span>Mo</span>
+              <span>Tu</span>
+              <span>We</span>
+              <span>Th</span>
+              <span>Fr</span>
+              <span>Sa</span>
+              <span>Su</span>
+            </div>
+            <div class="dates">
+            </div>
+          </div>
+        </div>
+
+        <!-- Notifications Card -->
+        <div class="card notifications-card">
+          <div class="card-title">
+            <img src="{% static 'admin/img/nots_icon.png' %}" alt="" class="card-icon"/>
+            <span>Notifications</span>
+          </div>
+          <ul class="notification-list">
+            <li>Guest check-ins at 15:00</li>
+            <li>3 reservations require confirmation</li>
+            <li>2 rooms to clean</li>
+          </ul>
+        </div>
+      </section>
+
+<!-- STATS SECTION -->
+<section class="stats-cards">
+    <div class="stat-card">
+      <div class="stat-item">
+        <div class="stat-circle">15%</div>
+        <p>Free rooms</p>
+      </div>
+      <div class="stat-item">
+        <div class="stat-circle">55%</div>
+        <p>Rooms occupied</p>
+      </div>
+      <div class="stat-item">
+        <div class="stat-circle">30%</div>
+        <p>Reserved rooms</p>
+      </div>
+    </div>
+  </section>
+  <script src="{% static 'admin/js/main_page.js' %}"></script>
+    </main>
+  </div>
+</body>
+</html>
