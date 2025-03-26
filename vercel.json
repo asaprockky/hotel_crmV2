@@ -1,16 +1,18 @@
 {
-    "version": 2,
-    "builds": [
-      {
-        "src": "crm_main/wsgi.py",
-        "use": "@vercel/python"
+  "builds": [
+    {
+      "src": "crm_main/wsgi.py",
+      "use": "@vercel/python",
+      "config": {
+        "maxLambdaSize": "15mb",
+        "runtime": "python3.11"
       }
-    ],
-    "routes": [
-      {
-        "src": "/(.*)",
-        "dest": "crm_main/wsgi.py"
-      }
-    ]
-  }
-  
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "crm_main/wsgi.py"
+    }
+  ]
+}

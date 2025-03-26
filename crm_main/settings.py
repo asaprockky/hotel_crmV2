@@ -41,6 +41,7 @@ DEFAULT_APPS  = [
 THIRD_PARTY_APPS = [
     'crispy_forms',
     "crispy_bootstrap4",
+    'whitenoise.runserver_nostatic'
 ]
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap4"  # Change to bootstrap5 if needed
@@ -57,6 +58,7 @@ INSTALLED_APPS = DEFAULT_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -87,8 +89,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'crm_main.wsgi.app'
 
-
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 
 # Password validation
