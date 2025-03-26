@@ -58,7 +58,10 @@ INSTALLED_APPS = DEFAULT_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+<<<<<<< HEAD
     'whitenoise.middleware.WhiteNoiseMiddleware',
+=======
+>>>>>>> 63c96da2cc33debbe53d2c51a1414a0d2f2949ea
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
