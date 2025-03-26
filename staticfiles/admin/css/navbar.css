@@ -15,17 +15,21 @@
   
   /* SIDEBAR HEADER (LOGO/AVATAR + TITLE) */
   .sidebar-header {
-    text-align: center;
+    display: flex; 
+    align-items: center; /* Align items vertically */
+    justify-content: center; /* Center items horizontally */
+    gap: 10px; /* Add spacing between items */
     margin-bottom: 30px;
-  }
+}
+
   
   .avatar-container {
     margin-bottom: 10px;
   }
   
   .avatar {
-    width: 80px;
-    height: 80px;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
     object-fit: cover;
 
@@ -33,7 +37,7 @@
   
   .sidebar-header h2 {
     font-size: 1.3rem;
-    font-weight: 700;
+    font-weight: 600;
   }
   
   /* NAVIGATION MENU */

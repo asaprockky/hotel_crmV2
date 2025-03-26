@@ -1,9 +1,14 @@
 /* GLOBAL RESETS */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+
+
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: Arial, sans-serif;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
   }
   
   /* BODY WRAPPER */
@@ -20,7 +25,7 @@
 
   /* MAIN CONTENT */
   .main-content {
-    margin-left: 280px; /* Same width as sidebar */
+    margin-left:90px; /* Same width as sidebar */
     padding: 40px;
     width: 100%;
     min-height: 100vh;
@@ -58,18 +63,16 @@
     
   }
   
-  /* CARD HEADERS */
-  .card-title {
-    align-items: center;
-    font-weight: bold;
-    font-size: 1.1rem;
+  .date-card {
+    display: flex;
+    align-items: center;  /* Align items vertically in the center */
+    gap: 20px; /* Add space between the two elements */
   }
   
-  .card-subtitle {
-    font-size: 1.1rem;
-    color: #030D28;
-    margin-left: auto;
-    font-weight: bold;
+  .card-title, .card-subtitle {
+    display: flex;
+    align-items: center;
+    gap: 5px; /* Add space between the icon and text */
   }
   
   .card-icon {
