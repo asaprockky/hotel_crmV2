@@ -18,6 +18,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
+CSRF_TRUSTED_ORIGINS = ["https://hotelcrmv2-production.up.railway.app"]
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-%5&-ew6f7ssj3sf-u&ia=4&15v)sqx&ixhw0upy@-$mpb&t!pw'
