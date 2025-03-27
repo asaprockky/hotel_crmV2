@@ -46,20 +46,19 @@
   .top-cards {
     display: flex;
     flex-wrap: wrap;
-    gap: 20px;
+    gap: 30px;
     margin-top: 30px;
   }
   
   .card {
     background-color: #EEEEEE; 
-    border-radius: 30px;
+    border-radius: 35px;
     padding: 20px;
-    flex: 1 1 300px; /* Flexible width, min 300px */
-    min-height: 150px;
     display: flex;
     flex-direction: column;
     color: #030D28;
     height: 200px;
+    width: 500px;
     
   }
   
@@ -73,6 +72,7 @@
     display: flex;
     align-items: center;
     gap: 5px; /* Add space between the icon and text */
+    padding-left: 15px;
   }
   
   .card-icon {
@@ -84,8 +84,16 @@
   /* MINI CALENDAR (OPTIONAL) */
   .mini-calendar {
     margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+
   }
-  
+  .date-wrapper{
+    width: 100%;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+  }
   .days, .dates {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
@@ -107,10 +115,13 @@
     margin-top: 15px;
     font-size: 0.9rem;
     color: #030D28;
+    padding-left: 15px;
+    
   }
   
   .notifications-card .notification-list li {
     margin: 5px 0;
+    padding: 5px;
   }
   /* STATS SECTION */
 .stats-cards {
