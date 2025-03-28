@@ -43,11 +43,11 @@
   /* NAVIGATION MENU */
   .nav-list {
     list-style: none;
-    padding: 0 20px;
+    padding: 0 15px;
   }
   
   .nav-list li {
-    margin: 15px 0;
+    margin: 15px ;
   }
   
   .nav-list a {
@@ -56,14 +56,24 @@
     text-decoration: none;
     color: #000;
     background-color: #FFFFFF;
-    padding: 10px 15px;
-    border-radius: 8px;
+    padding: 12px 17px;
+    border-radius: 20px;
     transition: background-color 0.2s;
   }
   
   .nav-list a:hover {
-    background-color: #e6e6e6;
-  }
+    border: 2px solid #CDA274; /* Change border color */
+    padding: 12px 17px;
+    border-radius: 20px; /* Optional: Rounded border */
+}
+
+
+.nav-list a.active {
+  border: 2px solid #CDA274; /* Change border color */
+
+  border-radius: 20px; /* Optional: Rounded border */
+}
+
   
   .icon {
     width: 20px;

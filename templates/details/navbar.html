@@ -17,35 +17,36 @@
       <nav>
         <ul class="nav-list">
           <li>
-            <a href="{% url 'main_page' %}">
+            <a href="{% url 'main_page' %}" class="{% if request.resolver_match.url_name == 'main_page' %}active{% endif %}">
               <img src="{% static 'admin/img/main_page_icon.png' %}" alt="" class="icon"/>
               Main Page
             </a>
           </li>
           <li>
-            <a href="{% url 'room_list' %}">
+            <a href="{% url 'room_list' %}" class="{% if request.resolver_match.url_name == 'room_list' %}active{% endif %}">
               <img src="{% static 'admin/img/booking_icon.png' %}" alt="" class="icon"/>
               Rooms
             </a>
           </li>
           <li>
-            <a href="{% url 'close_rooms_list' %}">
+            <a href="{% url 'close_rooms_list' %}" class="{% if request.resolver_match.url_name == 'close_rooms_list' %}active{% endif %}">
               <img src="{% static 'admin/img/rooms_icon.png' %}" alt="" class="icon"/>
               Reservations
             </a>
           </li>
           <li>
-            <a href="/stats">
+            <a href="/stats" class="{% if request.path == '/stats' %}active{% endif %}">
               <img src="{% static 'admin/img/stats_icon.png' %}" alt="" class="icon"/>
-              Finance 
+              Finance
             </a>
           </li>
           <li>
-            <a href="{% url 'settings' %}">
+            <a href="{% url 'settings' %}" class="{% if request.resolver_match.url_name == 'settings' %}active{% endif %}">
               <img src="{% static 'admin/img/settings_icon.png' %}" alt="" class="icon"/>
               Settings
             </a>
           </li>
+          
         </ul>
       </nav>
 
@@ -55,3 +56,4 @@
         <p>&copy; 2024 Hotel Admin Panel | All rights reserved.</p>
       </footer>
     </aside>
+    <link rel="stylesheet" href="{% static 'admin/js/navbar.js' %}" />

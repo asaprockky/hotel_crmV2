@@ -83,7 +83,7 @@
   
   /* MINI CALENDAR (OPTIONAL) */
   .mini-calendar {
-    margin-top: 15px;
+    margin-top: 8px;
     display: flex;
     flex-direction: column;
 
@@ -93,11 +93,14 @@
     display: flex;
     justify-content: space-evenly;
     align-items: center;
+    gap: 120px;
+    margin-top: 15px;
+    
   }
   .days, .dates {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 2px;
+    gap: 30px;
     font-size: 1rem;
     text-align: center;
     color: #030D28;
@@ -130,24 +133,25 @@
   
   .stat-card {
     background-color: #EEEEEE;
-    border-radius: 30px;
-    padding: 20px;
+    border-radius: 30px; /* Reduce border radius if needed */
+    padding: 15px; /* Reduce padding */
     text-align: center;
     color: #030D28;
     display: flex;
     justify-content: space-around;
     align-items: center;
+    max-width: 1030px; /* Limit the width */
     height: 300px;
-    width: 401;
-  }
+}
+
   
   .stat-item {
     flex: 1;
   }
   
   .stat-circle {
-    width: 120px;
-    height: 120px;
+    width: 170px;
+    height: 160px;
     margin: 0 auto 10px;
     border-radius: 50%;
     background-color: transparent;
@@ -155,7 +159,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.2rem;
+    font-size: 2.2rem;
     font-weight: bold;
   }
   
