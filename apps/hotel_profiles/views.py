@@ -9,6 +9,8 @@ from django.utils.timezone import now
 from datetime import timedelta, date
 from django.db import transaction
 from django.db.models import Sum
+
+
 class ShowRoomsView(LoginRequiredMixin, ListView):
     model = Room
     template_name = 'common/room_list.html'  # Ensure this file exists
