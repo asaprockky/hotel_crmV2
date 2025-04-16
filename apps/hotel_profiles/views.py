@@ -111,8 +111,6 @@ class ReservationCreateView(CreateView):
 
         # Save the reservation
         response = super().form_valid(form)
-
-        # Create a DailyReservation instance
         DailyReservation.objects.create(
             hotel=room.hotel,
             client=client,

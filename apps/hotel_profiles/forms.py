@@ -21,13 +21,13 @@ class ReservationForm(forms.ModelForm):
         passport_number = self.cleaned_data.get('passport_number')
         balance = self.cleaned_data.get('balance')
 
-        client_id, created = Client.objects.get_or_create(
+        client, created = Client.objects.get_or_create(
             passport_number=passport_number,
             defaults={'full_name': full_name, 'balance': balance},
         )
 
         reservation = super().save(commit=False)
-        reservation.client_id = client_id  # Link the reservation to the client
+        reservation.client = client  # Link the reservation to the client
 
         if commit:
             reservation.save()
