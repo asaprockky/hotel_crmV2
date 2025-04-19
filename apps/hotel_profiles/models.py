@@ -9,15 +9,26 @@ class Hotel(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="hotel")
     bio = models.TextField(max_length=500, blank=True)
     date_registered = models.DateField(auto_now_add=True)
-    balance = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    balance = models.DecimalField(max_digits=10,decimal_places=0, default=0)
+    
 
     def __str__(self):
         return self.user.username
 
+class TgId(models.Model):
+    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE, related_name="tgid")
+    POSITION_CHOICES = [
+        ('staff', 'Staff'),
+        ('boss', 'Boss'),
+    ]
+    position = models.CharField(max_length=7, choices=POSITION_CHOICES, null=True, blank=True)
+    tg_id = models.DecimalField(max_digits=15, decimal_places = 0, null= True)
+
+
 class Room(models.Model):
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE, related_name="rooms")
-    room_number = models.CharField(max_length=10)
-    room_type = models.CharField(max_length=50)
+    room_number = models.CharField(max_length=6)
+    room_type = models.CharField(max_length=20)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     is_available = models.BooleanField(default=True)
     

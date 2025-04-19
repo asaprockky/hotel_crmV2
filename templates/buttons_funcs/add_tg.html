@@ -1,0 +1,53 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Telegram ID</title>
+    <link rel="stylesheet" href="{% static 'admin/css/add_tg.css' %}" />
+</head>
+<body>
+    <div class="form-container">
+        <h2>Add Telegram ID</h2>
+
+        <!-- Check for any form errors and display them -->
+        {% if form.errors %}
+            <div class="errors">
+                <ul>
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+        
+        <!-- Form to submit the Telegram ID -->
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                {{ form.as_p }}  <!-- Render the form fields here -->
+            </div>
+            <button type="submit">Submit</button>
+        </form>
+        <button onclick="window.history.back()" class="back-button">
+            ← Back to Previous Page
+        </button>
+    </div>
+    <div class="tgid-guide">
+        <h3>How to Get Your Telegram ID</h3>
+        <ol class="steps">
+            <li><strong>Open Telegram</strong><br>Launch the Telegram app on your phone or computer</li>
+            <li><strong>Start @getmyidbot</strong><br>Search for <code>@my_id_bot</code> and click "Start"</li>
+            <li><strong>Copy Your ID</strong><br>The bot will display your numeric ID - copy this number</li>
+            <li><strong>Submit Your ID</strong><br>Paste the ID in the form below and select your position</li>
+        </ol>
+        <div class="note">
+            <strong>Note:</strong> Your Telegram ID is a unique number - don't share it publicly.
+        </div>
+    </div>
+    
+</body>
+</html>

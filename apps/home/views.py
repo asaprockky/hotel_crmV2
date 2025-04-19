@@ -2,12 +2,30 @@ from django.shortcuts import render
 from django.views.generic import TemplateView, CreateView
 from django.urls import reverse_lazy
 from .forms import SignUpForm, RoomForm
-from apps.hotel_profiles.models import Room
+from apps.hotel_profiles.models import Room, Hotel
 from django.contrib.auth.mixins import LoginRequiredMixin
 
+
 class MainPageView(LoginRequiredMixin, TemplateView):
-    template_name = 'main_page.html'
+    template_name = 'pages/main_page.html'
     login_url = reverse_lazy('login')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        hotel = self.request.user.hotel
+        total_rooms = Room.objects.filter(hotel=hotel).count()
+        available_rooms = Room.objects.filter(hotel=hotel, is_available=True).count()
+
+        if total_rooms > 0:
+            percent_free = (available_rooms / total_rooms) * 100
+        else:
+            percent_free = 0
+
+        context['percent_free'] = int(round(percent_free, 2))
+        context['available_rooms'] = int(100 - percent_free)
+        context['total_rooms'] = total_rooms
+        
+        return context
 
 
 class SignUpview(CreateView):
@@ -17,7 +35,7 @@ class SignUpview(CreateView):
 
 
 class SettingsView(LoginRequiredMixin, TemplateView):
-    template_name = 'settings.html'
+    template_name = 'pages/settings.html'
     login_url = reverse_lazy('settings')
 
 

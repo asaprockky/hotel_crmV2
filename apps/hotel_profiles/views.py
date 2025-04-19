@@ -3,12 +3,14 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Room, Reservation, DailyReservation
 from django.urls import reverse_lazy
 from .models import Reservation, Client, Hotel
-from .forms import ReservationForm , EditReservationForm
+from .forms import ReservationForm , EditReservationForm, getTgId
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.timezone import now
 from datetime import timedelta, date
 from django.db import transaction
 from django.db.models import Sum
+from django.http import HttpResponseForbidden
+from django.views.generic.edit import FormView
 
 
 class ShowRoomsView(LoginRequiredMixin, ListView):
@@ -134,7 +136,7 @@ class ReservationEditView(UpdateView):
 
 class ShowReservedRoomView(ListView):
     model = Reservation
-    template_name = 'edit_room_page.html'
+    template_name = 'pages/edit_room_page.html'
     context_object_name = 'reservations'
 
     def get_queryset(self):
@@ -199,18 +201,44 @@ class CloseRoomCommand(View):
         
         print("Room closed successfully.")
         return render(request, 'details/close_room_success.html', {'room': room})
-    
+
+
+PASSCODE = '1234'
+
+class EnterPasscodeView(TemplateView):
+    template_name = "details/enter_pass.html"
+
+class VerifyPasscodeView(View):
+    def post(self, request, *args, **kwargs):
+        entered_passcode = request.POST.get('passcode')
+
+        if entered_passcode == PASSCODE:
+            # Store passcode validation state in session for this session
+            request.session['is_passcode_valid'] = True
+            request.session.set_expiry(200)
+            return redirect('stats')  # Redirect to stats page after correct passcode
+        else:
+            return HttpResponseForbidden("Incorrect passcode. Please try again.")
+        
 class StatsView(TemplateView):
-    template_name = "stats.html"
+    template_name = "pages/stats.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        # Check if the passcode is validated in the session
+        if not request.session.get('is_passcode_valid', False):
+            return redirect('enter_passcode')  # Redirect to passcode entry if not validated
+        
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
+        
         # Ensure the logged-in user has a hotel
         try:
             hotel = Hotel.objects.get(user=self.request.user)
         except Hotel.DoesNotExist:
             hotel = None
+        
         one_week_ago = now() - timedelta(days=7)
         if hotel:
             # Gathering statistics
@@ -224,13 +252,12 @@ class StatsView(TemplateView):
             new_clients_week = Client.objects.filter(created_at__gte=one_week_ago).count()
             occupancy_rate = (Reservation.objects.filter(hotel=hotel).count() / total_rooms) * 100 if total_rooms > 0 else 0
             ending_soon = Reservation.objects.filter(hotel=hotel, check_out__lte=date.today()+timedelta(days=3)).count()
-            
         else:
             # Default values if the user has no hotel
             total_clients = available_rooms = total_rooms = active_reservations = total_revenue = daily_profit = 0
             recent_reservations = []
             occupancy_rate = ending_soon = 0
-
+        
         # Adding data to context
         context.update({
             'hotel': hotel,
@@ -245,5 +272,17 @@ class StatsView(TemplateView):
             'new_clients_week': new_clients_week,
             'ending_soon': ending_soon,
         })
-
+        
         return context
+    
+
+class AddTgFormView(FormView):
+    template_name = "buttons_funcs/add_tg.html"
+    form_class = getTgId  # Use your form class here
+    success_url = 'main_page'  # Redirect URL after successful form submission
+
+    def form_valid(self, form):
+        tg_id_instance = form.save(commit=False)
+        tg_id_instance.hotel = self.request.user.hotel
+        tg_id_instance.save()
+        return super().form_valid(form)  # Redirect to success_url after save

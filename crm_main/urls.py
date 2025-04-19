@@ -18,23 +18,27 @@ from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import TemplateView
 from apps.home.views import SignUpview, MainPageView, SettingsView, RegisterRoomView
-from apps.hotel_profiles.views import ShowRoomsView, ReservationCreateView, ShowReservedRoomView, ShowReservedRooms, CloseRoomCommand, StatsView
+from apps.hotel_profiles.views import ShowRoomsView, ReservationCreateView, ShowReservedRoomView, ShowReservedRooms, CloseRoomCommand,AddTgFormView, StatsView, EnterPasscodeView, VerifyPasscodeView
 from django.contrib.auth import views as auth_views
-
+APPEND_SLASH = True
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path("", MainPageView.as_view(), name="main_page"),
     path("main/", MainPageView.as_view(), name="main_page"),
     path('register/', SignUpview.as_view(), name = 'register' ),
     path('login/', auth_views.LoginView.as_view(template_name = 'common/login.html'), name = "login" ),
     path('logout/', auth_views.LogoutView.as_view(next_page = 'login'), name = "logout" ),
-    path('settings/', SettingsView.as_view(template_name = 'settings.html'), name = "settings" ),
+    path('settings/', SettingsView.as_view(template_name = 'pages/settings.html'), name = "settings" ),
     path('add_room/', RegisterRoomView.as_view(), name = 'add_room' ),
     path('room_list/', ShowRoomsView.as_view(template_name = 'common/room_list.html'), name = 'room_list' ),
     path('reserve/<int:room_id>/', ReservationCreateView.as_view(), name='reserve_room'),
     path('close_room_list/', ShowReservedRooms.as_view(template_name = 'common/reservations_list.html'), name = 'close_rooms_list' ),
     path('edit_reserve/<int:room_id>/', ShowReservedRoomView.as_view(), name='edit_reserved_room'),
     path('close_room/<int:pk>/', CloseRoomCommand.as_view(), name='close_room'),
-    path('stats/', StatsView.as_view(template_name = 'stats.html'), name = "stats" ),
+    path('enter-passcode/', EnterPasscodeView.as_view(), name='enter_passcode'),
+    path('verify-passcode/', VerifyPasscodeView.as_view(), name='verify_passcode'),
+    path('stats/', StatsView.as_view(), name='stats'),
+    path('add_tg/', AddTgFormView.as_view(), name= "add_tg" )
 
     
 ]

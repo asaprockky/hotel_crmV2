@@ -59,6 +59,7 @@
     padding: 12px 17px;
     border-radius: 20px;
     transition: background-color 0.2s;
+    border: 2px solid transparent;
   }
   
   .nav-list a:hover {

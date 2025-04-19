@@ -1,0 +1,90 @@
+<link rel="icon" sizes="32x32" href="https://i.imgur.com/JHJge3X.jpeg" type="image/png">
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'admin/css/stats.css' %}" />
+<div class="back-button-container">
+    <a href="{% url 'main_page' %}" class="back-button">
+        <i class="fas fa-arrow-left"></i> Back
+    </a>
+</div>
+<div class="stats-container">
+    <!-- Header Section -->
+    <div class="stats-header">
+        <h1>Hotel Dashboard</h1>
+        <div class="header-info">
+            <span class="hotel-name">{{ hotel.user.username }}</span>
+            <span class="current-balance">Balance: ${{ hotel.balance }}</span>
+        </div>
+    </div>
+
+    <!-- Key Metrics Grid -->
+    <div class="metrics-grid">
+        <div class="metric-card" style="background-color: #030D28;">
+            <h3>Total Clients</h3>
+            <div class="metric-value" style="color: #2BBE2A;">{{ total_clients }}</div>
+            <div class="metric-change">
+                <span class="change-positive">+{{ new_clients_week }} this week</span>
+            </div>
+        </div>
+
+        <div class="metric-card" style="background-color: #030D28;">
+            <h3>Available Rooms</h3>
+            <div class="metric-value" style="color: #FFFFFF;">{{ available_rooms }}/{{ total_rooms }}</div>
+            <div class="metric-progress">
+                <div class="progress-bar" style="width: {{ occupancy_rate }}%; background-color: #CDA274;"></div>
+            </div>
+        </div>
+
+        <div class="metric-card" style="background-color: #030D28;">
+            <h3>Active Reservations</h3>
+            <div class="metric-value" style="color: #2BBE2A;">{{ active_reservations }}</div>
+            <div class="metric-change">
+                <span class="change-negative" style="color: #F44842;">{{ ending_soon }} ending soon</span>
+            </div>
+        </div>
+
+        <div class="metric-card" style="background-color: #030D28;">
+            <h3>Total Revenue</h3>
+            <div class="metric-value" style="color: #2BBE2A;">${{ total_revenue }}</div>
+            <div class="metric-change">
+                <span class="change-positive">+${{ daily_profit }} today</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="charts-grid">
+        <div class="chart-card">
+            <h3>Monthly Profit Trend</h3>
+            <canvas id="profitChart"></canvas>
+        </div>
+        
+        <div class="chart-card">
+            <h3>Room Type Distribution</h3>
+            <canvas id="roomTypeChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Recent Activity Section -->
+    <div class="recent-activity">
+        <h3>Recent Reservations</h3>
+        <div class="activity-list">
+            {% for reservation in recent_reservations %}
+            <div class="activity-item">
+                <span class="client-name">{{ reservation.client.full_name }}</span>
+                <span class="room-number">{{ reservation.room.room_number }}</span>
+                <span class="checkin-date">{{ reservation.check_in }}</span>
+                <span class="status-indicator" style="background-color: {% if reservation.check_out %}#F44842{% else %}#2BBE2A{% endif %}"></span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+
+<!-- Load Chart.js first -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Then your custom script -->
+<script src="{% static 'admin/js/stats.js' %}"></script>
+{% endblock %}

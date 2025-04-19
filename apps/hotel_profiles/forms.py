@@ -1,5 +1,5 @@
 from django import forms
-from .models import Reservation, Client, Room
+from .models import Reservation, Client, Room, TgId
 
 class ReservationForm(forms.ModelForm):
     full_name = forms.CharField(max_length=100, required=True, label="Client Name")
@@ -42,3 +42,9 @@ class EditReservationForm(forms.ModelForm):
         widgets = {
             'check_out': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
         }
+
+
+class getTgId(forms.ModelForm):
+    class Meta:
+        model = TgId
+        fields = ['tg_id', 'position']

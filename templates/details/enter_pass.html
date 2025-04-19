@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enter Passcode</title>
+    <link rel="stylesheet" href="{% static 'admin/css/enter_pass.css' %}" />
+</head>
+<body>
+    <div class="container">
+        <h2>Please enter the 4-digit passcode</h2>
+        <form method="POST" class="passcode-form" action="{% url 'verify_passcode' %}">
+            {% csrf_token %}
+            <input type="password" name="passcode" maxlength="4" placeholder="• • • •" required pattern="\d{4}">
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+</body>
+</html>

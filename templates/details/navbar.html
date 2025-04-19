@@ -1,6 +1,6 @@
 {% load static %}
 <link rel="stylesheet" href="{% static 'admin/css/navbar.css' %}" />
-
+<link rel="icon" sizes="32x32" href="https://i.imgur.com/JHJge3X.jpeg" type="image/png">
 <div class="wrapper">
     <!-- SIDEBAR -->
     <aside class="sidebar">
@@ -35,7 +35,7 @@
             </a>
           </li>
           <li>
-            <a href="/stats" class="{% if request.path == '/stats' %}active{% endif %}">
+            <a href="/enter-passcode" class="{% if request.path == '/enter-passcode' %}active{% endif %}">
               <img src="{% static 'admin/img/stats_icon.png' %}" alt="" class="icon"/>
               Finance
             </a>
@@ -52,7 +52,7 @@
 
       <!-- FOOTER -->
       <footer class="sidebar-footer">
-        <p>Developed by Asap Rocky &amp; Ibragim Jalilov</p>
+        <p>Developed by Asap Rocky &amp; Fullstek.uz</p>
         <p>&copy; 2024 Hotel Admin Panel | All rights reserved.</p>
       </footer>
     </aside>

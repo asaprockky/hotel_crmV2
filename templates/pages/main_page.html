@@ -1,0 +1,146 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Hotel Admin Panel</title>
+  <link rel="icon" sizes="32x32" href="https://i.imgur.com/JHJge3X.jpeg" type="image/png">
+  <!-- Link to the external CSS file -->
+  <link rel="stylesheet" href="{% static 'admin/css/main_page.css' %}" />
+
+
+</head>
+<body>
+ {% include 'details/navbar.html' %}
+        <!-- FOOTER -->
+        <footer class="sidebar-footer">
+          <p>Developed by Asap Rocky &amp; Example.uz</p>
+          <p>&copy; 2024 Hotel Admin Panel | All rights reserved.</p>
+        </footer>
+      </aside>
+  
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+      {% if user.is_authenticated %}
+      <h1 class="welcome-title">
+        Welcome <span class="highlight">{{ user.first_name }}!</span>
+      </h1>
+      {% endif %}
+      <!-- TOP CARDS -->
+      <section class="top-cards">
+        <!-- Date & Time Card -->
+        <div class="card date-card">
+          <div class="date-wrapper">
+            <div class="card-title">
+              <img src="{% static 'admin/img/calendar_icon.png' %}" alt="" class="card-icon"/>
+              <span id="current-date"></span>
+            </div>
+            <div class="card-subtitle">
+              <img src="{% static 'admin/img/clock_icon.png' %}" alt="" class="card-icon"/>
+              <span id="current-time"></span>
+            </div>
+          </div>
+
+          <!-- Example mini-calendar (optional) -->
+          <div class="mini-calendar">
+            <div class="days">
+              <span>Mo</span>
+              <span>Tu</span>
+              <span>We</span>
+              <span>Th</span>
+              <span>Fr</span>
+              <span>Sa</span>
+              <span>Su</span>
+            </div>
+            <div class="dates">
+            </div>
+          </div>
+        </div>
+
+        <!-- Notifications Card -->
+        <div class="card notifications-card">
+          <div class="card-title">
+            <img src="{% static 'admin/img/nots_icon.png' %}" alt="" class="card-icon"/>
+            <span>Notes</span>
+          </div>
+        
+          <ul class="notification-list" id="notificationList"></ul>
+        </div>
+
+<!-- STATS SECTION -->
+<section class="stats-cards">
+    <div class="stat-card">
+      <div class="stat-item">
+        <div class="stat-circle">{{ percent_free }}%</div>
+        <p>Free rooms</p>
+      </div>
+      <div class="stat-item">
+        <div class="stat-circle">{{ available_rooms }}%</div>
+        <p>Rooms occupied</p>
+      </div>
+      <div class="stat-item">
+        <div class="stat-circle">30%</div>
+        <p>Reserved rooms</p>
+      </div>
+    </div>
+  </section>
+  <script src="{% static 'admin/js/main_page.js' %}"></script>
+    </main>
+  </div>
+</body>
+</html>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const saved = JSON.parse(localStorage.getItem('notifications')) || [];
+    saved.forEach(text => addLine(text));
+    if (saved.length === 0) addLine(); // Add one if empty
+  });
+
+  function addLine(text = '') {
+    const list = document.getElementById('notificationList');
+    if (list.children.length >= 3) return;
+
+    const li = document.createElement('li');
+
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.value = text;
+    input.className = 'notification-input';
+    input.addEventListener('input', saveAll);
+
+    const btnGroup = document.createElement('div');
+    btnGroup.className = 'line-buttons';
+
+    const addBtn = document.createElement('button');
+    addBtn.textContent = '+';
+    addBtn.onclick = () => {
+      addLine();
+      saveAll();
+    };
+
+    const delBtn = document.createElement('button');
+    delBtn.textContent = '🗑️';
+    delBtn.onclick = () => {
+      li.remove();
+      saveAll();
+    };
+
+    btnGroup.appendChild(addBtn);
+    btnGroup.appendChild(delBtn);
+
+    li.appendChild(input);
+    li.appendChild(btnGroup);
+
+    list.appendChild(li);
+    saveAll();
+  }
+
+  function saveAll() {
+    const list = document.querySelectorAll('.notification-input');
+    const values = Array.from(list).map(input => input.value.trim()).filter(val => val);
+    localStorage.setItem('notifications', JSON.stringify(values));
+  }
+</script>
