@@ -2,7 +2,7 @@ from django.views.generic import ListView, CreateView, UpdateView, DetailView,Vi
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Room, Reservation, DailyReservation
 from django.urls import reverse_lazy
-from .models import Reservation, Client, Hotel
+from .models import Reservation, Client, Hotel, TgId
 from .forms import ReservationForm , EditReservationForm, getTgId
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.timezone import now
@@ -11,6 +11,7 @@ from django.db import transaction
 from django.db.models import Sum
 from django.http import HttpResponseForbidden
 from django.views.generic.edit import FormView
+from .bot import send_notification
 
 
 class ShowRoomsView(LoginRequiredMixin, ListView):
@@ -70,6 +71,22 @@ class ReservationCreateView(CreateView):
         context['room'] = get_object_or_404(Room, id=room_id)
         return context
     
+    def send_message_to_boss(self, form):
+        tgid = TgId.objects.filter(hotel__user=self.request.user, position='boss').first()
+        print(tgid)
+        if tgid and tgid.tg_id:
+            balance = form.cleaned_data.get('balance')
+            room_id = self.kwargs.get('room_id')
+            room = get_object_or_404(Room, id=room_id)
+            mssg = f"""
+            🎉 To'ldirish
+            📍 Xona Raqami {room}.
+            ➕ {balance} $
+            Thank you for your attention! 😊
+            """
+            send_notification(tgid.tg_id, mssg)
+
+        
     def form_valid(self, form):
         """Assign the room, hotel, and client to the reservation."""
         room_id = self.kwargs.get('room_id')
@@ -119,7 +136,7 @@ class ReservationCreateView(CreateView):
             room=room,
             profit=client.balance  # Store the client's balance at the time of creation
         )
-
+        self.send_message_to_boss(form)
         return super().form_valid(form)
 
 
@@ -278,11 +295,11 @@ class StatsView(TemplateView):
 
 class AddTgFormView(FormView):
     template_name = "buttons_funcs/add_tg.html"
-    form_class = getTgId  # Use your form class here
-    success_url = 'main_page'  # Redirect URL after successful form submission
+    form_class = getTgId  
+    success_url = '/main_page/'  
 
     def form_valid(self, form):
         tg_id_instance = form.save(commit=False)
         tg_id_instance.hotel = self.request.user.hotel
         tg_id_instance.save()
-        return super().form_valid(form)  # Redirect to success_url after save
+        return super().form_valid(form) 
