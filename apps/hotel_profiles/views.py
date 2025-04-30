@@ -303,3 +303,8 @@ class AddTgFormView(FormView):
         tg_id_instance.hotel = self.request.user.hotel
         tg_id_instance.save()
         return super().form_valid(form) 
+    
+
+
+
+# new update for testing
