@@ -121,23 +121,23 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.postgresql",
-#         "NAME": "railway",
-#         "USER": "postgres",
-#         "PASSWORD": "NToiejAesBtLPHxAGzXuSMDMTFVSElZs",
-#         "HOST": "postgres.railway.internal",
-#         "PORT": "5432"
-#     }
-# }
 import dj_database_url
 import os
 
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.postgresql",
+#         "NAME": "rairailwaylway",
+#         "USER": "postgres",
+#         "PASSWORD": "YJWUOjmQwdvVMhfafjOVydEhKYCdUgjS",
+#         "HOST": "postgres-jjxv.railway.internal",
+#         "PORT": "5432"
+#     }
+# }
+# settings.py
 DATABASES = {
-    "default": dj_database_url.config(default=os.environ.get("DATABASE_URL"))
+    'default': dj_database_url.parse(os.getenv('DATABASE_URL'))
 }
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 import os
