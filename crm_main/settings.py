@@ -124,20 +124,20 @@ USE_TZ = True
 import dj_database_url
 import os
 
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.postgresql",
-#         "NAME": "rairailwaylway",
-#         "USER": "postgres",
-#         "PASSWORD": "YJWUOjmQwdvVMhfafjOVydEhKYCdUgjS",
-#         "HOST": "postgres-jjxv.railway.internal",
-#         "PORT": "5432"
-#     }
-# }
-# settings.py
 DATABASES = {
-    'default': dj_database_url.parse(os.getenv('DATABASE_URL'))
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "rairailwaylway",
+        "USER": "postgres",
+        "PASSWORD": "YJWUOjmQwdvVMhfafjOVydEhKYCdUgjS",
+        "HOST": "postgres-jjxv.railway.internal",
+        "PORT": "5432"
+    }
 }
+# settings.py
+# DATABASES = {
+#     'default': dj_database_url.parse(os.getenv('DATABASE_URL'))
+# }
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 import os

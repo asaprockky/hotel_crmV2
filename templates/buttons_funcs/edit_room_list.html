@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Room List</title>
+    <link rel="stylesheet" href="{% static 'admin/css/edit_room_list.css' %}">
+</head>
+<body>
+    <div class="main-content">
+        <h1>Room List</h1>
+        {% if rooms %}
+            <div class="room-container">
+                {% for room in rooms %}
+                    <div class="room-card">
+                        <div class="room-info">
+                            <h4>{{ room.room_number }}</h4>
+                            <p class="room-type">{{ room.room_type }}</p>
+                        </div>
+                        <div class="room-price {% if room.is_available %}price-available{% else %}price-unavailable{% endif %}">
+                            <a href="{% url 'reserve_room' room.id %}" class="room-price-link">${{ room.price }}</a>
+                        </div>
+                        <a href="{% url 'edit_room' room.id %}" class="btn">Edit</a>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>No rooms available.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

@@ -48,3 +48,26 @@ class getTgId(forms.ModelForm):
     class Meta:
         model = TgId
         fields = ['tg_id', 'position']
+
+class RoomForm(forms.ModelForm):
+    class Meta:
+        model = Room
+        fields = ['room_number', 'room_type', 'price', 'is_available']
+        widgets = {
+            'room_number': forms.TextInput(attrs={'class': 'form-control'}),
+            'room_type': forms.TextInput(attrs={'class': 'form-control'}),
+            'price': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
+            'is_available': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+
+    def clean_room_number(self):
+        room_number = self.cleaned_data['room_number']
+        if len(room_number) > 6:
+            raise forms.ValidationError("Room number cannot exceed 6 characters.")
+        return room_number
+
+    def clean_price(self):
+        price = self.cleaned_data['price']
+        if price < 0:
+            raise forms.ValidationError("Price cannot be negative.")
+        return price

@@ -1,0 +1,97 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+
+body {
+    background-color: #030D28;
+    color: white;
+    font-family: 'Montserrat', sans-serif;
+    text-align: center;
+    font-weight: 600;
+    margin: 0;
+    padding: 0;
+}
+
+/* Navbar fix - Ensure it doesn't overlap */
+.navbar {
+    position: fixed;
+}
+
+/* Adjust main content to avoid overlap */
+.main-content {
+    margin-left: 260px; /* Adjust based on your navbar width */
+    padding: 20px;
+}
+
+.room-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: left;
+    padding: 20px;
+    padding-left: 100px;
+}
+
+.room-card {
+    width: 200px; /* Adjust as needed */
+    border-radius: 22px;
+    overflow: hidden;
+    background: #EEEEEE;
+    text-align: center;
+    font-family: 'Montserrat', sans-serif;
+    height: 120px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.room-info {
+    padding: 10px;
+    background: #eee;
+}
+
+.room-info h4 {
+    margin: 2px 0;
+    font-size: 18px;
+    color: #030D28;
+}
+
+.room-type {
+    margin: 0;
+    font-size: 16px;
+    color: #CDA274;
+}
+
+.room-price {
+    padding: 5px;
+    font-size: 16px;
+    font-weight: 600;
+    color: white;
+}
+
+.price-available {
+    background: #2BBE2A; /* Green */
+}
+
+.price-unavailable {
+    background: #F44842; /* Red */
+}
+
+.room-price-link {
+    text-decoration: none; /* Remove underline */
+    color: inherit; /* Inherit color from parent */
+    font-size: inherit; /* Match text size of surrounding text */
+    font-weight: inherit; /* Match weight of other text */
+}
+
+.btn {
+    display: inline-block;
+    padding: 8px 16px;
+    margin: 10px;
+    background-color: #CDA274; /* Match room-type color */
+    color: #030D28;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: background-color 0.3s;
+}
+
+.btn:hover {
+    background-color: #b88c5e; /* Darker shade for hover */
+}

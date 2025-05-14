@@ -2,8 +2,8 @@ from django.views.generic import ListView, CreateView, UpdateView, DetailView,Vi
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Room, Reservation, DailyReservation
 from django.urls import reverse_lazy
-from .models import Reservation, Client, Hotel, TgId
-from .forms import ReservationForm , EditReservationForm, getTgId
+from .models import Reservation, Client, Hotel, TgId, Room
+from .forms import ReservationForm , EditReservationForm, getTgId, RoomForm
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.timezone import now
 from datetime import timedelta, date
@@ -72,8 +72,10 @@ class ReservationCreateView(CreateView):
         return context
     
     def send_message_to_boss(self, form):
-        tgid = TgId.objects.filter(hotel__user=self.request.user, position='boss').first()
-        print(tgid)
+        room_id = self.kwargs.get('room_id')
+        room = get_object_or_404(Room,id =  room_id)
+        tgid = TgId.objects.filter(hotel = room.hotel, position='boss').first()
+        print(f"TgId: {tgid}, Hotel: {room.hotel}")
         if tgid and tgid.tg_id:
             balance = form.cleaned_data.get('balance')
             room_id = self.kwargs.get('room_id')
@@ -150,7 +152,22 @@ class ReservationEditView(UpdateView):
         """Ensures that users can only edit their own reservations"""
         return Reservation.objects.filter(client=self.request.user)
     
+class RoomEditView(LoginRequiredMixin, View):
+    template_name = 'buttons_funcs/edit_room.html'
 
+    def get(self, request, room_id):
+        room = get_object_or_404(Room, id=room_id, hotel__user=request.user)
+        form = RoomForm(instance=room)
+        return render(request, self.template_name, {'form': form, 'room': room})
+
+    def post(self, request, room_id):
+        room = get_object_or_404(Room, id=room_id, hotel__user=request.user)
+        form = RoomForm(request.POST, instance=room)
+        if form.is_valid():
+            form.save()
+            return redirect('main_page')  # Adjust to your room list URL name
+        return render(request, self.template_name, {'form': form, 'room': room})
+    
 class ShowReservedRoomView(ListView):
     model = Reservation
     template_name = 'pages/edit_room_page.html'
@@ -306,5 +323,10 @@ class AddTgFormView(FormView):
     
 
 
+class RoomListView(LoginRequiredMixin, View):
+    template_name = 'buttons_funcs/edit_room_list.html'
 
+    def get(self, request):
+        rooms = Room.objects.filter(hotel__user=request.user)
+        return render(request, self.template_name, {'rooms': rooms})
 # new update for testing

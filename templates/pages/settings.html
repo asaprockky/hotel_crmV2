@@ -33,7 +33,9 @@
         <p class="payment-info">Next payment date: 15.01.2026</p>
         
         <div class="bottom-buttons">
+            <a href="{% url 'edit_room_list' %}">
             <img src="{% static 'admin/img/edit_rooms.png' %}" alt="Add rooms" class="image-button">
+            </a>
             <a href="{% url 'add_room' %}">
             <img src="{% static 'admin/img/add_rooms.png' %}" alt="Edit rooms" class="image-button">
             </a>

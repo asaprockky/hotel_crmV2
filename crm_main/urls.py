@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import TemplateView
 from apps.home.views import SignUpview, MainPageView, SettingsView, RegisterRoomView
-from apps.hotel_profiles.views import ShowRoomsView, ReservationCreateView, ShowReservedRoomView, ShowReservedRooms, CloseRoomCommand,AddTgFormView, StatsView, EnterPasscodeView, VerifyPasscodeView
+from apps.hotel_profiles.views import ShowRoomsView,RoomListView, ReservationCreateView, ShowReservedRoomView, ShowReservedRooms,RoomEditView, CloseRoomCommand,AddTgFormView, StatsView, EnterPasscodeView, VerifyPasscodeView
 from django.contrib.auth import views as auth_views
 APPEND_SLASH = True
 urlpatterns = [
@@ -38,7 +38,9 @@ urlpatterns = [
     path('enter-passcode/', EnterPasscodeView.as_view(), name='enter_passcode'),
     path('verify-passcode/', VerifyPasscodeView.as_view(), name='verify_passcode'),
     path('stats/', StatsView.as_view(), name='stats'),
-    path('add_tg/', AddTgFormView.as_view(), name= "add_tg" )
+    path('add_tg/', AddTgFormView.as_view(), name= "add_tg" ),
+    path('rooms/<int:room_id>/edit/', RoomEditView.as_view(), name='edit_room'),
+    path('rooms/', RoomListView.as_view(), name='edit_room_list'),
 
     
 ]
