@@ -7,6 +7,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Room - Hotel CRM</title>
+    
     <link rel="stylesheet" href="{% static 'admin/css/add_room.css' %}">
 </head>
 <body>
@@ -35,11 +36,9 @@
                         {{ form.price }}
                     </div>
                 </div>
-                
-                <!-- Is Available Checkbox -->
-                <div class="checkbox-group">
+                <div class="form-group">
+                    <label for="id_is_available">Availability</label>
                     {{ form.is_available }}
-                    <label class="checkbox-label" for="id_is_available">Is Available</label>
                 </div>
     
                 <button type="submit" class="btn-primary">Save Room</button>

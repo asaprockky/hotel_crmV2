@@ -17,19 +17,41 @@
             <h1 class="title">List of <span class="highlight">available rooms</span></h1>
             <div class="room-container">
                 {% for room in rooms %}
-                <div class="room-card {% if room.not_available  %}available{% else %}unavailable{% endif %}">
-                    <div class="room-info">
-                        <h4>Room №{{ room.room_number }}</h4>
-                        <p class="room-type">{{ room.room_type }}</p>
-                    </div>
-                    <div class="room-price {% if room.is_available %}price-available{% else %}price-unavailable{% endif %}">
-                        <a href="{% if room.is_available %}{% url 'reserve_room' room.id %}{% else %}#{% endif %}" 
-                           class="room-price-link {% if not room.is_available %}disabled-link{% endif %}">
-                            <p>${{ room.price }} per night</p>
-                        </a>
-                    </div>
-                    
-                </div>
+        <div class="room-card 
+            {% if room.is_available == 'available' %}
+                available
+            {% elif room.is_available == 'reserved' %}
+                reserved
+            {% else %}
+                unavailable
+            {% endif %}">
+            <div class="room-info">
+                <h4>Room №{{ room.room_number }}</h4>
+                <p class="room-type">{{ room.room_type }}</p>
+            </div>
+
+            <div class="room-price 
+                {% if room.is_available == 'available' %}
+                    price-available
+                {% elif room.is_available == 'reserved' %}
+                    price-reserved
+                {% else %}
+                    price-unavailable
+                {% endif %}
+            ">
+                {% if room.is_available == 'available' %}
+                    <a href="{% url 'reserve_room' room.id %}" class="room-price-link">
+                        <p>${{ room.price }} per night</p>
+                    </a>
+                {% else %}
+                    <a href="#" class="room-price-link disabled-link" 
+                    title="{% if room.status == 'reserved' %}Room is reserved{% else %}Room is unavailable{% endif %}">
+                        <p>${{ room.price }} per night</p>
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+
                 {% endfor %}
             </div>
             

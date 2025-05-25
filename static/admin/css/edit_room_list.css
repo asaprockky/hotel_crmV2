@@ -26,7 +26,7 @@ body {
     flex-wrap: wrap;
     gap: 20px;
     justify-content: left;
-    padding: 20px;
+    padding:20px ;
     padding-left: 100px;
 }
 
@@ -69,29 +69,16 @@ body {
     background: #2BBE2A; /* Green */
 }
 
-.price-unavailable {
+.price-unavailable{
     background: #F44842; /* Red */
+    
 }
+
 
 .room-price-link {
     text-decoration: none; /* Remove underline */
     color: inherit; /* Inherit color from parent */
     font-size: inherit; /* Match text size of surrounding text */
     font-weight: inherit; /* Match weight of other text */
-}
-
-.btn {
-    display: inline-block;
-    padding: 8px 16px;
-    margin: 10px;
-    background-color: #CDA274; /* Match room-type color */
-    color: #030D28;
-    text-decoration: none;
-    border-radius: 8px;
-    font-weight: 500;
-    transition: background-color 0.3s;
-}
-
-.btn:hover {
-    background-color: #b88c5e; /* Darker shade for hover */
-}
+  }
+  

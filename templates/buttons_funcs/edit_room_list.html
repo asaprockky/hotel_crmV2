@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Room List</title>
-    <link rel="stylesheet" href="{% static 'admin/css/edit_room_list.css' %}">
+    <link rel="stylesheet" href="{% static 'admin/css/room_list.css' %}"> <!-- Corrected path -->
 </head>
 <body>
     <div class="main-content">
@@ -18,8 +18,17 @@
                             <h4>{{ room.room_number }}</h4>
                             <p class="room-type">{{ room.room_type }}</p>
                         </div>
-                        <div class="room-price {% if room.is_available %}price-available{% else %}price-unavailable{% endif %}">
-                            <a href="{% url 'reserve_room' room.id %}" class="room-price-link">${{ room.price }}</a>
+                        <div class="room-price 
+                            {% if room.status == 'available' %}price-available
+                            {% elif room.status == 'reserved' %}price-reserved
+                            {% else %}price-unavailable{% endif %}">
+                            {% if room.status == 'available' %}
+                                <a href="{% url 'reserve_room' room.id %}" class="room-price-link">${{ room.price }}</a>
+                            {% elif room.status == 'reserved' %}
+                                <span class="room-price-link" title="Room reserved">${{ room.price }} (Reserved)</span>
+                            {% else %}
+                                <span class="room-price-link" title="Room unavailable">${{ room.price }}</span>
+                            {% endif %}
                         </div>
                         <a href="{% url 'edit_room' room.id %}" class="btn">Edit</a>
                     </div>

@@ -3,7 +3,13 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 import random
+from django.utils import timezone
 
+ROOM_STATUS_CHOICES = [
+    ('available', 'Available'),
+    ('unavailable', 'Unavailable'),
+    ('reserved', 'Reserved')
+]
 
 class Hotel(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="hotel")
@@ -30,7 +36,7 @@ class Room(models.Model):
     room_number = models.CharField(max_length=6)
     room_type = models.CharField(max_length=20)
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    is_available = models.BooleanField(default=True)
+    is_available = models.CharField(max_length= 15, choices= ROOM_STATUS_CHOICES, default= "available" )
     
 
     def __str__(self):
@@ -41,6 +47,7 @@ class Client(models.Model):
     passport_number = models.CharField(max_length=10, unique=True)
     balance = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     created_at = models.DateTimeField(auto_now_add=True)
+    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE, default= 1)
     def __str__(self):
         return f"{self.full_name} ({self.passport_number})"
 
@@ -55,30 +62,30 @@ class Reservation(models.Model):
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE, related_name="reservations")
     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name="reservations")
     room = models.ForeignKey(Room, on_delete=models.SET_NULL, null=True, blank=True, related_name="reservations")
+    deposit_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     check_in = models.DateField()
     check_out = models.DateField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):
-        
         if self.room:
-            self.room.is_available = False
-            self.room.save()
-        
+            today = timezone.localdate()
+            if self.check_in == today:
+                self.room.is_available = 'unavailable'  # Use valid choice
+                self.room.save()
+            elif self.check_in > today:
+                self.room.is_available = 'reserved'  # Use valid choice
+                self.room.save()
         super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
-        """Make the room available only if no other active reservations exist."""
-        super().delete(*args, **kwargs)  # Delete the reservation first
-
+        super().delete(*args, **kwargs)
         if self.room:
             has_other_reservations = Reservation.objects.filter(
                 room=self.room, check_out__isnull=True
             ).exists()
-
-            # Mark the room as available only if there are no active reservations
             if not has_other_reservations:
-                self.room.is_available = True
+                self.room.is_available = 'available'  # Use valid choice
                 self.room.save()
 
     def __str__(self):

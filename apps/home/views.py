@@ -1,9 +1,11 @@
 from django.shortcuts import render
 from django.views.generic import TemplateView, CreateView
 from django.urls import reverse_lazy
-from .forms import SignUpForm, RoomForm
+from .forms import SignUpForm
+from apps.hotel_profiles.forms import RoomForm
 from apps.hotel_profiles.models import Room, Hotel
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib import messages
 
 
 class MainPageView(LoginRequiredMixin, TemplateView):

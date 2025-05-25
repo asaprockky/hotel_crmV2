@@ -1,6 +1,7 @@
 from django.views.generic import ListView, CreateView, UpdateView, DetailView,View, TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Room, Reservation, DailyReservation
+from decimal import Decimal
 from django.urls import reverse_lazy
 from .models import Reservation, Client, Hotel, TgId, Room
 from .forms import ReservationForm , EditReservationForm, getTgId, RoomForm
@@ -52,95 +53,98 @@ class ShowReservedRooms(LoginRequiredMixin, ListView):
 
 
 
-class ReservationCreateView(CreateView):
+class ReservationCreateView(LoginRequiredMixin, CreateView):
     model = Reservation
     form_class = ReservationForm
     template_name = 'buttons_funcs/reservation_form.html'
     success_url = reverse_lazy('main_page')
 
     def get_initial(self):
-        """Pre-fill the form with the room ID from the URL."""
-        room_id = self.kwargs.get('room_id')
-        room = get_object_or_404(Room, id=room_id)
+        """Pre-fill the form with the room from the URL."""
+        room = self._get_room()
         return {'room': room}
 
     def get_context_data(self, **kwargs):
-        """Pass room to the template explicitly."""
+        """Add room to the template context."""
         context = super().get_context_data(**kwargs)
-        room_id = self.kwargs.get('room_id')
-        context['room'] = get_object_or_404(Room, id=room_id)
+        context['room'] = self._get_room()
         return context
-    
-    def send_message_to_boss(self, form):
+
+    def _get_room(self):
+        """Helper method to fetch the room from URL parameter."""
         room_id = self.kwargs.get('room_id')
-        room = get_object_or_404(Room,id =  room_id)
-        tgid = TgId.objects.filter(hotel = room.hotel, position='boss').first()
-        print(f"TgId: {tgid}, Hotel: {room.hotel}")
+        return get_object_or_404(Room, id=room_id)
+
+    def send_message_to_boss(self, reservation, profit, days_stayed):
+        """Send a Telegram notification to the hotel boss."""
+        room = reservation.room
+        tgid = TgId.objects.filter(hotel=room.hotel, position='boss').first()
         if tgid and tgid.tg_id:
-            balance = form.cleaned_data.get('balance')
-            room_id = self.kwargs.get('room_id')
-            room = get_object_or_404(Room, id=room_id)
-            mssg = f"""
-            🎉 To'ldirish
-            📍 Xona Raqami {room}.
-            ➕ {balance} $
-            Thank you for your attention! 😊
-            """
-            send_notification(tgid.tg_id, mssg)
+            message = (
+                f"✅ Yangi bandlov!\n"
+                f"🏨 Xona raqami: {room.room_number}\n"
+                f"📅 Kunlar soni: {days_stayed}\n"
+                f"💰 Foyda: ${profit:.2f}\n"
+                f"💵 To‘lov (depozit): ${reservation.deposit_amount:.2f}\n"
+                f"Rahmat, e'tiboringiz uchun! 😊"
+            )
+            send_notification(tgid.tg_id, message)
 
-        
     def form_valid(self, form):
-        """Assign the room, hotel, and client to the reservation."""
-        room_id = self.kwargs.get('room_id')
-        room = get_object_or_404(Room, id=room_id)
+        """Process the form, create reservation, and handle related actions."""
+        room = self._get_room()
+        if not room.is_available:
+            form.add_error(None, 'This room is not available.')
+            return self.form_invalid(form)
 
-        form.instance.room = room  # Assign the room
-        form.instance.hotel = room.hotel  # Assign the hotel
+        # Extract form data
+        full_name = form.cleaned_data['full_name']
+        passport_number = form.cleaned_data['passport_number']
+        deposit = form.cleaned_data['deposit_amount']
+        check_in = form.cleaned_data['check_in']
+        check_out = form.cleaned_data['check_out']
 
-        # Get client details from the form
-        full_name = form.cleaned_data.get('full_name')
-        passport_number = form.cleaned_data.get('passport_number')
-        balance = form.cleaned_data.get('balance')
-
-        # Create or get the client
+        # Get or create client for this hotel
         client, created = Client.objects.get_or_create(
             passport_number=passport_number,
-            defaults={'full_name': full_name, 'balance': balance}
+            hotel=room.hotel,  # Scope client to this hotel
+            defaults={'full_name': full_name, 'balance': Decimal('0.00')}
         )
 
-        form.instance.client = client  # Assign the client to the reservation
-    def form_valid(self, form):
-        """Assign the room, hotel, and client to the reservation."""
-        room_id = self.kwargs.get('room_id')
-        room = get_object_or_404(Room, id=room_id)
+        # Add deposit to client balance
+        client.balance += deposit
+        client.save()
 
-        form.instance.room = room  # Assign the room
-        form.instance.hotel = room.hotel  # Assign the hotel
+        # Calculate stay duration and profit for notification and DailyReservation
+        days_stayed = (check_out - check_in).days if check_out else 1
+        if days_stayed <= 0:
+            form.add_error(None, 'Check-out date must be after check-in date.')
+            return self.form_invalid(form)
+        profit = room.price * days_stayed
 
-        # Get client details from the form
-        full_name = form.cleaned_data.get('full_name')
-        passport_number = form.cleaned_data.get('passport_number')
-        balance = form.cleaned_data.get('balance')
-
-        # Create or get the client
-        client, created = Client.objects.get_or_create(
-            passport_number=passport_number,
-            defaults={'full_name': full_name, 'balance': balance}
-        )
-
-        form.instance.client = client  # Assign the client to the reservation
+        # Set reservation fields
+        form.instance.room = room
+        form.instance.hotel = room.hotel
+        form.instance.client = client
+        form.instance.deposit_amount = deposit
+        form.instance.check_in = check_in
+        form.instance.check_out = check_out
 
         # Save the reservation
         response = super().form_valid(form)
+
+        # Create DailyReservation
         DailyReservation.objects.create(
             hotel=room.hotel,
             client=client,
             room=room,
-            profit=client.balance  # Store the client's balance at the time of creation
+            profit=profit
         )
-        self.send_message_to_boss(form)
-        return super().form_valid(form)
 
+        # Send notification
+        self.send_message_to_boss(form.instance, profit, days_stayed)
+
+        return response
 
 class ReservationEditView(UpdateView):
     model = Reservation
@@ -227,7 +231,7 @@ class CloseRoomCommand(View):
             )
 
             client.balance = 0
-            room.is_available = True
+            room.is_available = "available"
 
             reservation.save()
             client.save()

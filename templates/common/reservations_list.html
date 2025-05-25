@@ -13,25 +13,35 @@
         <div class = 'main'>
             <h1 class="title">List of <span class="highlight">reservations</span></h1>
             <div class="room-container">
-                {% for room in rooms %}
-                {% if not room.is_available %}
-
-                <div class="room-card">
-                
-                    <div class="room-info">
-                        <h4>Room №{{ room.room_number }}</h4>
-                        <p class="room-type">{{ room.room_type }}</p>
-                    </div>
-                    <div class="room-price price-unavailable">
-                        <a href="{% url 'edit_reserved_room' room.id %}" class="room-price-link">
-                        
-                            <p>${{ room.price }} per night</p>
-                        </a>
-                    </div>
-                </div>
+{% for room in rooms %}
+    {% if room.is_available != 'available' %}
+        <div class="room-card 
+            {% if room.status == 'reserved' %}
+                reserved
+            {% else %}
+                unavailable
             {% endif %}
-            
-                {% endfor %}
+        ">
+            <div class="room-info">
+                <h4>Room №{{ room.room_number }}</h4>
+                <p class="room-type">{{ room.room_type }}</p>
+            </div>
+
+            <div class="room-price 
+                {% if room.status == 'reserved' %}
+                    price-reserved
+                {% else %}
+                    price-unavailable
+                {% endif %}
+            ">
+                <a href="{% url 'edit_reserved_room' room.id %}" class="room-price-link">
+                    <p>${{ room.price }} per night</p>
+                </a>
+            </div>
+        </div>
+    {% endif %}
+{% endfor %}
+
             </div>
         </div>
     </div>
