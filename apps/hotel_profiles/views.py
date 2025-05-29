@@ -2,19 +2,19 @@ from django.views.generic import ListView, CreateView, UpdateView, DetailView,Vi
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Room, Reservation, DailyReservation
 from decimal import Decimal
-from django.urls import reverse_lazy
-from .models import Reservation, Client, Hotel, TgId, Room
+from django.urls import reverse, reverse_lazy
+from .models import Reservation, Client, Hotel, TgId, Room, Plan
 from .forms import ReservationForm , EditReservationForm, getTgId, RoomForm
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.timezone import now
 from datetime import timedelta, date
 from django.db import transaction
-from django.db.models import Sum
+from django.db.models import Sum, Avg, F 
 from django.http import HttpResponseForbidden
 from django.views.generic.edit import FormView
 from .bot import send_notification
-
-
+import json
+from django.http import JsonResponse
 class ShowRoomsView(LoginRequiredMixin, ListView):
     model = Room
     template_name = 'common/room_list.html'  # Ensure this file exists
@@ -78,6 +78,9 @@ class ReservationCreateView(LoginRequiredMixin, CreateView):
     def send_message_to_boss(self, reservation, profit, days_stayed):
         """Send a Telegram notification to the hotel boss."""
         room = reservation.room
+        hotel = room.hotel
+        if hotel.plan == "basic":
+            return
         tgid = TgId.objects.filter(hotel=room.hotel, position='boss').first()
         if tgid and tgid.tg_id:
             message = (
@@ -146,15 +149,30 @@ class ReservationCreateView(LoginRequiredMixin, CreateView):
 
         return response
 
-class ReservationEditView(UpdateView):
-    model = Reservation
-    form_class = EditReservationForm
-    template_name = 'buttons_funcs/edit_room_form.html'
-    success_url = reverse_lazy('main_page')
+class EditReservationView(View):
+    template_name = 'buttons_funcs/edit_reservation_form.html'
 
-    def get_queryset(self):
-        """Ensures that users can only edit their own reservations"""
-        return Reservation.objects.filter(client=self.request.user)
+    def get(self, request, *args, **kwargs):
+        reservation_id = kwargs['pk']
+        reservation = get_object_or_404(Reservation, id=reservation_id, room__hotel=request.user.hotel)
+        initial_data = {
+            'check_in': reservation.check_in,
+            'check_out': reservation.check_out,
+            'room': reservation.room,
+            'deposit_amount': reservation.deposit_amount,
+        }
+        form = EditReservationForm(instance=reservation, initial=initial_data)
+        print(f"Form Initial Data: {form.initial}")
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request, *args, **kwargs):
+        reservation_id = kwargs['pk']
+        reservation = get_object_or_404(Reservation, id=reservation_id, room__hotel=request.user.hotel)
+        form = EditReservationForm(request.POST, instance=reservation)
+        if form.is_valid():
+            form.save()
+            return redirect('reservation_detail', pk=reservation.pk)
+        return render(request, self.template_name, {'form': form})
     
 class RoomEditView(LoginRequiredMixin, View):
     template_name = 'buttons_funcs/edit_room.html'
@@ -171,7 +189,7 @@ class RoomEditView(LoginRequiredMixin, View):
             form.save()
             return redirect('main_page')  # Adjust to your room list URL name
         return render(request, self.template_name, {'form': form, 'room': room})
-    
+from django.utils import timezone
 class ShowReservedRoomView(ListView):
     model = Reservation
     template_name = 'pages/edit_room_page.html'
@@ -179,7 +197,8 @@ class ShowReservedRoomView(ListView):
 
     def get_queryset(self):
         room_id = self.kwargs.get('room_id')
-        return Reservation.objects.filter(room_id = room_id)
+        today = now().date()
+        return Reservation.objects.filter(room_id = room_id, check_out__gte=today)
     
     
 
@@ -195,7 +214,8 @@ class ShowReservedRoomView(ListView):
                 'check_in': res.check_in,
                 'check_out': res.check_out,
                 'balance': res.client.balance,
-                'passport': res.client.passport_number,  # Assuming client model has this field
+                'passport': res.client.passport_number, 
+                'has_to_pay' : ((res.check_out - res.check_in).days) * res.room.price - res.client.balance if res.check_out else 1 * res.room.price - res.client.balance
             }
             for res in reservations
         ]
@@ -203,15 +223,46 @@ class ShowReservedRoomView(ListView):
         
         return context
 
+class EditReservationView(UpdateView):
+    model = Reservation
+    form_class = EditReservationForm
+    template_name = 'buttons_funcs/edit_reservation_form.html'
+    context_object_name = 'reservation'
+
+    def get_queryset(self):
+        # Optional: limit access to reservations related to user's hotel
+        return Reservation.objects.filter(room__hotel=self.request.user.hotel)
+
+    def get_success_url(self):
+        # Redirect after successful update
+        return reverse('reservation_detail', kwargs={'pk': self.object.pk})
+
 class CloseRoomCommand(View):
     model = Reservation
-    
+    def send_message_to_boss(self, reservation,profit, days_stayed):
+        """Send a Telegram notification to the hotel staff."""
+        room = reservation.room
+        tgid = TgId.objects.filter(hotel=room.hotel, position='staff').first()
+        hotel = room.hotel
+        if hotel.plan == "basic":
+            return
+        if tgid and tgid.tg_id:
+            message = (
+                f"✅ Xona yopildi!\n"
+                f"🏨 Xona raqami: {room.room_number}\n"
+                f"📅 Kunlar soni: {days_stayed}\n"
+                f"Iltimos xonani tozalang"
+                f"Rahmat, e'tiboringiz uchun! 😊"
+            )
+            print(tgid)
+            send_notification(tgid.tg_id, message)    
     def post(self, request, *args, **kwargs):
         room_id = self.kwargs['pk']
         user = request.user
         room = get_object_or_404(Room, id=room_id, hotel=user.hotel)
 
         reservation = Reservation.objects.filter(room=room).order_by('-created_at').first()
+
 
         if not reservation:
             print("No active reservation found for this room.")
@@ -221,6 +272,7 @@ class CloseRoomCommand(View):
 
         with transaction.atomic():
             reservation.check_out = now().date()
+            days_stayed = (reservation.check_out - reservation.check_in).days
 
             # Save daily reservation
             DailyReservation.objects.create(
@@ -236,7 +288,8 @@ class CloseRoomCommand(View):
             reservation.save()
             client.save()
             room.save()
-        
+        profit = client.balance
+        self.send_message_to_boss(reservation,profit, days_stayed)
         print("Room closed successfully.")
         return render(request, 'details/close_room_success.html', {'room': room})
 
@@ -244,7 +297,16 @@ class CloseRoomCommand(View):
 PASSCODE = '1234'
 
 class EnterPasscodeView(TemplateView):
-    template_name = "details/enter_pass.html"
+    
+    def get(self, request):
+        template = "details/enter_pass.html"
+        hotel = request.user.hotel
+        if hotel.plan == "basic":
+            return render(request, "details/plan_popup.html", {"show_popup": True})
+        
+        return render(request, template_name = template)
+
+    
 
 class VerifyPasscodeView(View):
     def post(self, request, *args, **kwargs):
@@ -258,66 +320,101 @@ class VerifyPasscodeView(View):
         else:
             return HttpResponseForbidden("Incorrect passcode. Please try again.")
         
-class StatsView(TemplateView):
-    template_name = "pages/stats.html"
+class StatsView(LoginRequiredMixin, View):
+    def get(self, request):
+        # Ensure user is authenticated and has a linked hotel
+        if not hasattr(request.user, 'hotel'):
+            return render(request, 'stats.html', {'error': "Mehmonxona topilmadi"})
 
-    def dispatch(self, request, *args, **kwargs):
-        # Check if the passcode is validated in the session
-        if not request.session.get('is_passcode_valid', False):
-            return redirect('enter_passcode')  # Redirect to passcode entry if not validated
-        
-        return super().dispatch(request, *args, **kwargs)
+        hotel = request.user.hotel
+        today = timezone.localdate()
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        
-        # Ensure the logged-in user has a hotel
-        try:
-            hotel = Hotel.objects.get(user=self.request.user)
-        except Hotel.DoesNotExist:
-            hotel = None
-        
-        one_week_ago = now() - timedelta(days=7)
-        if hotel:
-            # Gathering statistics
-            total_clients = Client.objects.filter(reservations__hotel=hotel).distinct().count()
-            available_rooms = Room.objects.filter(hotel=hotel, is_available=True).count()
-            total_rooms = Room.objects.filter(hotel=hotel).count()
-            active_reservations = Reservation.objects.filter(hotel=hotel, check_out__isnull=True).count()
-            total_revenue = DailyReservation.objects.filter(hotel=hotel).aggregate(Sum('profit'))['profit__sum'] or 0
-            daily_profit = DailyReservation.objects.filter(hotel=hotel, created_at__date=date.today()).aggregate(Sum('profit'))['profit__sum'] or 0
-            recent_reservations = Reservation.objects.filter(hotel=hotel).order_by('-created_at')[:5]
-            new_clients_week = Client.objects.filter(created_at__gte=one_week_ago).count()
-            occupancy_rate = (Reservation.objects.filter(hotel=hotel).count() / total_rooms) * 100 if total_rooms > 0 else 0
-            ending_soon = Reservation.objects.filter(hotel=hotel, check_out__lte=date.today()+timedelta(days=3)).count()
-        else:
-            # Default values if the user has no hotel
-            total_clients = available_rooms = total_rooms = active_reservations = total_revenue = daily_profit = 0
-            recent_reservations = []
-            occupancy_rate = ending_soon = 0
-        
-        # Adding data to context
-        context.update({
-            'hotel': hotel,
-            'total_clients': total_clients,
-            'available_rooms': available_rooms,
+        # Room Statistics
+        total_rooms = Room.objects.filter(hotel=hotel).count()
+        available_rooms = Room.objects.filter(hotel=hotel, is_available='available').count()
+        unavailable_rooms = Room.objects.filter(hotel=hotel, is_available='unavailable').count()
+        reserved_rooms = Room.objects.filter(hotel=hotel, is_available='reserved').count()
+
+        # Revenue Statistics (handling Decimal)
+        total_revenue = DailyReservation.objects.filter(hotel=hotel).aggregate(Sum('profit'))['profit__sum'] or 0
+        total_revenue = float(total_revenue) if total_revenue else 0.0
+
+        revenue_today = DailyReservation.objects.filter(hotel=hotel, created_at__date=today).aggregate(Sum('profit'))['profit__sum'] or 0
+        revenue_today = float(revenue_today) if revenue_today else 0.0
+
+        start_of_week = today - timedelta(days=today.weekday())
+        revenue_week = DailyReservation.objects.filter(hotel=hotel, created_at__date__gte=start_of_week).aggregate(Sum('profit'))['profit__sum'] or 0
+        revenue_week = float(revenue_week) if revenue_week else 0.0
+
+        start_of_month = today.replace(day=1)
+        revenue_month = DailyReservation.objects.filter(hotel=hotel, created_at__date__gte=start_of_month).aggregate(Sum('profit'))['profit__sum'] or 0
+        revenue_month = float(revenue_month) if revenue_month else 0.0
+
+        # Occupancy Rate
+        occupancy_rate = ((unavailable_rooms + reserved_rooms) / total_rooms * 100) if total_rooms > 0 else 0
+        occupancy_rate = round(float(occupancy_rate), 2)
+
+        # Average Stay Duration
+        average_stay = Reservation.objects.filter(hotel=hotel, check_out__isnull=False).annotate(
+            stay_duration=F('check_out') - F('check_in')
+        ).aggregate(Avg('stay_duration'))['stay_duration__avg']
+        average_stay_days = int(average_stay.days) if average_stay else 0
+
+        # Client Statistics
+        total_clients = Client.objects.filter(hotel=hotel).count()
+        new_clients_today = Client.objects.filter(hotel=hotel, created_at__date=today).count()
+        new_clients_week = Client.objects.filter(hotel=hotel, created_at__date__gte=start_of_week).count()
+        new_clients_month = Client.objects.filter(hotel=hotel, created_at__date__gte=start_of_month).count()
+
+        # Chart Data
+        # Room Status Pie Chart
+        room_status_labels = ['Bo\'sh', 'Band', 'Rezervlangan']
+        room_status_data = [available_rooms, unavailable_rooms, reserved_rooms]
+
+        # Revenue Line Chart (last 7 days)
+        dates = [today - timedelta(days=i) for i in range(6, -1, -1)]
+        revenue_data = [
+            float(DailyReservation.objects.filter(hotel=hotel, created_at__date=date).aggregate(Sum('profit'))['profit__sum'] or 0)
+            for date in dates
+        ]
+        date_labels = [date.strftime('%d-%m-%Y') for date in dates]
+
+        # New Clients Bar Chart (last 7 days)
+        new_clients_data = [
+            Client.objects.filter(hotel=hotel, created_at__date=date).count()
+            for date in dates
+        ]
+
+        # Prepare context
+        context = {
             'total_rooms': total_rooms,
-            'active_reservations': active_reservations,
+            'available_rooms': available_rooms,
+            'unavailable_rooms': unavailable_rooms,
+            'reserved_rooms': reserved_rooms,
             'total_revenue': total_revenue,
-            'daily_profit': daily_profit,
-            'recent_reservations': recent_reservations,
+            'revenue_today': revenue_today,
+            'revenue_week': revenue_week,
+            'revenue_month': revenue_month,
             'occupancy_rate': occupancy_rate,
+            'average_stay_days': average_stay_days,
+            'total_clients': total_clients,
+            'new_clients_today': new_clients_today,
             'new_clients_week': new_clients_week,
-            'ending_soon': ending_soon,
-        })
-        
-        return context
+            'new_clients_month': new_clients_month,
+            'room_status_labels': json.dumps(room_status_labels),  # Safe: strings
+            'room_status_data': json.dumps(room_status_data),  # Safe: integers
+            'date_labels': json.dumps(date_labels),  # Safe: strings
+            'revenue_data': json.dumps(revenue_data),  # Safe: floats
+            'new_clients_data': json.dumps(new_clients_data),  # Safe: integers
+        }
+
+        return render(request, 'pages/stats.html', context)
     
 
 class AddTgFormView(FormView):
     template_name = "buttons_funcs/add_tg.html"
     form_class = getTgId  
-    success_url = '/main_page/'  
+    success_url = '/main/'  
 
     def form_valid(self, form):
         tg_id_instance = form.save(commit=False)
@@ -333,4 +430,40 @@ class RoomListView(LoginRequiredMixin, View):
     def get(self, request):
         rooms = Room.objects.filter(hotel__user=request.user)
         return render(request, self.template_name, {'rooms': rooms})
-# new update for testing
+
+
+
+
+class PaymentView(LoginRequiredMixin, View):
+    template_name = 'pages/payment.html'
+    def get(self, request):
+        hotel = request.user.hotel
+        balance = hotel.balance
+        print(balance)
+        plan = hotel.plan
+        if hotel.last_payment:
+            next_payment_date = hotel.last_payment + timedelta(days= 31)
+        else:
+            next_payment_date = "To'lov mavjud emas"
+        context = {
+            'balance' : balance,
+            'plan': plan, 
+            "next_payment_date" : next_payment_date
+        }
+        return render(request, self.template_name, context)
+    def post(self, request):
+        data = json.loads(request.body)
+        plan = data.get('plan')
+        print(plan)
+        hotel = request.user.hotel
+        cplan = Plan.objects.get(key= plan)
+        if hotel.balance >= cplan.price:
+            hotel.plan = plan.lower()
+            hotel.balance = hotel.balance - cplan.price
+            now = timezone.now()
+            hotel.last_payment = now
+            hotel.save()
+            return JsonResponse({'success': True, 'plan': cplan.name})
+        else:
+            print('wewew')
+            return JsonResponse({'error' : 'Balansda yetarli mablag mavjud emas'}, status = 400)

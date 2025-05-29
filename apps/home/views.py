@@ -62,3 +62,5 @@ class RegisterRoomView(LoginRequiredMixin, CreateView):
         room.hotel = self.request.user.hotel  # Assign hotel to the room
         room.save()
         return super().form_valid(form)
+    
+

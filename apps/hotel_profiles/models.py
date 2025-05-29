@@ -4,33 +4,53 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 import random
 from django.utils import timezone
-
+from django.db.models import Q
 ROOM_STATUS_CHOICES = [
     ('available', 'Available'),
     ('unavailable', 'Unavailable'),
     ('reserved', 'Reserved')
 ]
 
+HOTEL_PLAN_CHOICES = [
+    ('basic', 'Basic'),
+    ('standard', 'Standard'),
+    ('premium', 'Premium')
+]
 class Hotel(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="hotel")
     bio = models.TextField(max_length=500, blank=True)
     date_registered = models.DateField(auto_now_add=True)
     balance = models.DecimalField(max_digits=10,decimal_places=0, default=0)
+    plan = models.TextField(max_length= 10, choices=HOTEL_PLAN_CHOICES, default= "basic")
+    last_payment = models.DateField(blank= True, null= True)
     
 
     def __str__(self):
         return self.user.username
 
 class TgId(models.Model):
-    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE, related_name="tgid")
+    hotel = models.ForeignKey('Hotel', on_delete=models.CASCADE, related_name="tgid")
+    
     POSITION_CHOICES = [
         ('staff', 'Staff'),
         ('boss', 'Boss'),
     ]
     position = models.CharField(max_length=7, choices=POSITION_CHOICES, null=True, blank=True)
-    tg_id = models.DecimalField(max_digits=15, decimal_places = 0, null= True)
+    tg_id = models.DecimalField(max_digits=15, decimal_places=0, null=True, unique=True)
 
-
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['hotel'],
+                condition=Q(position='staff'),
+                name='unique_staff_per_hotel'
+            ),
+            models.UniqueConstraint(
+                fields=['hotel'],
+                condition=Q(position='boss'),
+                name='unique_boss_per_hotel'
+            )
+        ]
 class Room(models.Model):
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE, related_name="rooms")
     room_number = models.CharField(max_length=6)
@@ -41,7 +61,21 @@ class Room(models.Model):
 
     def __str__(self):
         return f"Room {self.room_number} - {self.room_type}"
+class Plan(models.Model):
+    key = models.CharField(max_length=20, choices=HOTEL_PLAN_CHOICES, unique=True)
+    name = models.CharField(max_length=50)
+    price = models.PositiveIntegerField(help_text="Narx so'mda (UZS)")
+    description = models.TextField(blank=True)
+    max_rooms = models.PositiveIntegerField()
+    telegram_notifications = models.BooleanField(default=True)
+    financial_reports = models.BooleanField(default=False)
+    export_excel = models.BooleanField(default=False)
+    multi_hotel = models.BooleanField(default=False)
 
+    def __str__(self):
+        return f"{self.name} ({self.price} UZS/oy)"
+    
+    
 class Client(models.Model):
     full_name = models.CharField(max_length=100)
     passport_number = models.CharField(max_length=10, unique=True)
@@ -70,6 +104,7 @@ class Reservation(models.Model):
     def save(self, *args, **kwargs):
         if self.room:
             today = timezone.localdate()
+            print(today)
             if self.check_in == today:
                 self.room.is_available = 'unavailable'  # Use valid choice
                 self.room.save()

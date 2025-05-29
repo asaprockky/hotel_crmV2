@@ -18,11 +18,11 @@
 
     <main class="container">
         <h1>Settings</h1>
-        
+
         <div class="top-buttons">
-            <button class="crm-balance">
-                CRM balance: $
-            </button>
+            <a href="{% url 'payment' %}">
+            <button class="connect-telegram">POS balance</button>
+            </a>
             <button class="language-selector">Select language ▼</button>
             <a href="{% url 'add_tg' %}">
             <button class="connect-telegram">Connect Telegram</button>
@@ -31,6 +31,7 @@
         
         
         <p class="payment-info">Next payment date: 15.01.2026</p>
+        
         
         <div class="bottom-buttons">
             <a href="{% url 'edit_room_list' %}">

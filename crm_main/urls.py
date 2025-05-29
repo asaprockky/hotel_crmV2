@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import TemplateView
 from apps.home.views import SignUpview, MainPageView, SettingsView, RegisterRoomView
-from apps.hotel_profiles.views import ShowRoomsView,RoomListView, ReservationCreateView, ShowReservedRoomView, ShowReservedRooms,RoomEditView, CloseRoomCommand,AddTgFormView, StatsView, EnterPasscodeView, VerifyPasscodeView
+from apps.hotel_profiles.views import ShowRoomsView,RoomListView, PaymentView, EditReservationView, ReservationCreateView, ShowReservedRoomView, ShowReservedRooms,RoomEditView, CloseRoomCommand,AddTgFormView, StatsView, EnterPasscodeView, VerifyPasscodeView
 from django.contrib.auth import views as auth_views
 APPEND_SLASH = True
 urlpatterns = [
@@ -34,6 +34,7 @@ urlpatterns = [
     path('reserve/<int:room_id>/', ReservationCreateView.as_view(), name='reserve_room'),
     path('close_room_list/', ShowReservedRooms.as_view(template_name = 'common/reservations_list.html'), name = 'close_rooms_list' ),
     path('edit_reserve/<int:room_id>/', ShowReservedRoomView.as_view(), name='edit_reserved_room'),
+    path('reservation/<int:pk>/', EditReservationView.as_view(), name='edit_reservation'),
     path('close_room/<int:pk>/', CloseRoomCommand.as_view(), name='close_room'),
     path('enter-passcode/', EnterPasscodeView.as_view(), name='enter_passcode'),
     path('verify-passcode/', VerifyPasscodeView.as_view(), name='verify_passcode'),
@@ -41,6 +42,5 @@ urlpatterns = [
     path('add_tg/', AddTgFormView.as_view(), name= "add_tg" ),
     path('rooms/<int:room_id>/edit/', RoomEditView.as_view(), name='edit_room'),
     path('rooms/', RoomListView.as_view(), name='edit_room_list'),
-
-    
+    path('payment/', PaymentView.as_view(), name='payment'),
 ]

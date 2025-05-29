@@ -116,11 +116,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
-
 USE_I18N = True
 
-USE_TZ = True
 import dj_database_url
 import os
 
@@ -134,6 +131,10 @@ DATABASES = {
         "PORT": "5432"
     }
 }
+
+TIME_ZONE = 'Asia/Tashkent'
+USE_TZ = True
+
 # settings.py
 # DATABASES = {
 #     'default': dj_database_url.parse(os.getenv('DATABASE_URL'))
@@ -159,7 +160,7 @@ MEDIA_URL = "/media/"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-LOGIN_REDIRECT_URL = '/main_page/'
+LOGIN_REDIRECT_URL = '/main'
 try:
     from crm_main.local_settings import *
 except ImportError:

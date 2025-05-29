@@ -1,90 +1,170 @@
-<link rel="icon" sizes="32x32" href="https://i.imgur.com/JHJge3X.jpeg" type="image/png">
 {% load static %}
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistika - Mehmonxona Boshqaruvi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'admin/css/stats.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    {% include 'details/navbar.html' %}
+    <main class="main-content">
+        <h1 class="welcome-title">Statistika</h1>
 
-{% block content %}
-<link rel="stylesheet" href="{% static 'admin/css/stats.css' %}" />
-<div class="back-button-container">
-    <a href="{% url 'main_page' %}" class="back-button">
-        <i class="fas fa-arrow-left"></i> Back
-    </a>
-</div>
-<div class="stats-container">
-    <!-- Header Section -->
-    <div class="stats-header">
-        <h1>Hotel Dashboard</h1>
-        <div class="header-info">
-            <span class="hotel-name">{{ hotel.user.username }}</span>
-            <span class="current-balance">Balance: ${{ hotel.balance }}</span>
-        </div>
-    </div>
-
-    <!-- Key Metrics Grid -->
-    <div class="metrics-grid">
-        <div class="metric-card" style="background-color: #030D28;">
-            <h3>Total Clients</h3>
-            <div class="metric-value" style="color: #2BBE2A;">{{ total_clients }}</div>
-            <div class="metric-change">
-                <span class="change-positive">+{{ new_clients_week }} this week</span>
+        <!-- Room Statistics -->
+        <section class="stats-section">
+            <h2>Xonalar Statistikasi</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Jami Xonalar</h3>
+                    <p>{{ total_rooms }}</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Bo'sh Xonalar</h3>
+                    <p>{{ available_rooms }}</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Band Xonalar</h3>
+                    <p>{{ unavailable_rooms }}</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Rezervlangan Xonalar</h3>
+                    <p>{{ reserved_rooms }}</p>
+                </div>
             </div>
-        </div>
+        </section>
 
-        <div class="metric-card" style="background-color: #030D28;">
-            <h3>Available Rooms</h3>
-            <div class="metric-value" style="color: #FFFFFF;">{{ available_rooms }}/{{ total_rooms }}</div>
-            <div class="metric-progress">
-                <div class="progress-bar" style="width: {{ occupancy_rate }}%; background-color: #CDA274;"></div>
+        <!-- Revenue Statistics -->
+        <section class="stats-section">
+            <h2>Daromad Statistikasi</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Jami Daromad</h3>
+                    <p>{{ total_revenue }} UZS</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Bugungi Daromad</h3>
+                    <p>{{ revenue_today }} UZS</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Haftalik Daromad</h3>
+                    <p>{{ revenue_week }} UZS</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Oylik Daromad</h3>
+                    <p>{{ revenue_month }} UZS</p>
+                </div>
             </div>
-        </div>
+        </section>
 
-        <div class="metric-card" style="background-color: #030D28;">
-            <h3>Active Reservations</h3>
-            <div class="metric-value" style="color: #2BBE2A;">{{ active_reservations }}</div>
-            <div class="metric-change">
-                <span class="change-negative" style="color: #F44842;">{{ ending_soon }} ending soon</span>
+        <!-- Client Statistics -->
+        <section class="stats-section">
+            <h2>Mijozlar Statistikasi</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Jami Mijozlar</h3>
+                    <p>{{ total_clients }}</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Bugungi Yangi Mijozlar</h3>
+                    <p>{{ new_clients_today }}</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Haftalik Yangi Mijozlar</h3>
+                    <p>{{ new_clients_week }}</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Oylik Yangi Mijozlar</h3>
+                    <p>{{ new_clients_month }}</p>
+                </div>
             </div>
-        </div>
+        </section>
 
-        <div class="metric-card" style="background-color: #030D28;">
-            <h3>Total Revenue</h3>
-            <div class="metric-value" style="color: #2BBE2A;">${{ total_revenue }}</div>
-            <div class="metric-change">
-                <span class="change-positive">+${{ daily_profit }} today</span>
+        <!-- Additional Statistics -->
+        <section class="stats-section">
+            <h2>Qo'shimcha Statistika</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Bandlik Darajasi</h3>
+                    <p>{{ occupancy_rate }}%</p>
+                </div>
+                <div class="stat-card">
+                    <h3>O'rtacha Turish Davomiyligi</h3>
+                    <p>{{ average_stay_days }} kun</p>
+                </div>
             </div>
-        </div>
-    </div>
+        </section>
 
-    <!-- Charts Section -->
-    <div class="charts-grid">
-        <div class="chart-card">
-            <h3>Monthly Profit Trend</h3>
-            <canvas id="profitChart"></canvas>
-        </div>
-        
-        <div class="chart-card">
-            <h3>Room Type Distribution</h3>
-            <canvas id="roomTypeChart"></canvas>
-        </div>
-    </div>
-
-    <!-- Recent Activity Section -->
-    <div class="recent-activity">
-        <h3>Recent Reservations</h3>
-        <div class="activity-list">
-            {% for reservation in recent_reservations %}
-            <div class="activity-item">
-                <span class="client-name">{{ reservation.client.full_name }}</span>
-                <span class="room-number">{{ reservation.room.room_number }}</span>
-                <span class="checkin-date">{{ reservation.check_in }}</span>
-                <span class="status-indicator" style="background-color: {% if reservation.check_out %}#F44842{% else %}#2BBE2A{% endif %}"></span>
+        <!-- Charts -->
+        <section class="charts-section">
+            <h2>Grafiklar</h2>
+            <div class="chart-container">
+                <canvas id="roomStatusChart"></canvas>
             </div>
-            {% endfor %}
-        </div>
-    </div>
-</div>
+            <div class="chart-container">
+                <canvas id="revenueChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="newClientsChart"></canvas>
+            </div>
+        </section>
+    </main>
 
+    <script>
+        // Room Status Pie Chart
+        const ctx1 = document.getElementById('roomStatusChart').getContext('2d');
+        new Chart(ctx1, {
+            type: 'pie',
+            data: {
+                labels: {{ room_status_labels|safe }},
+                datasets: [{
+                    data: {{ room_status_data|safe }},
+                    backgroundColor: ['#28a745', '#dc3545', '#ffc107']
+                }]
+            },
+            options: { responsive: true }
+        });
 
-<!-- Load Chart.js first -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<!-- Then your custom script -->
-<script src="{% static 'admin/js/stats.js' %}"></script>
-{% endblock %}
+        // Revenue Line Chart
+        const ctx2 = document.getElementById('revenueChart').getContext('2d');
+        new Chart(ctx2, {
+            type: 'line',
+            data: {
+                labels: {{ date_labels|safe }},
+                datasets: [{
+                    label: 'Daromad',
+                    data: {{ revenue_data|safe }},
+                    borderColor: '#007bff',
+                    backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+
+        // New Clients Bar Chart
+        const ctx3 = document.getElementById('newClientsChart').getContext('2d');
+        new Chart(ctx3, {
+            type: 'bar',
+            data: {
+                labels: {{ date_labels|safe }},
+                datasets: [{
+                    label: 'Yangi Mijozlar',
+                    data: {{ new_clients_data|safe }},
+                    backgroundColor: '#CDA274'
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+    </script>
+</body>
+</html>

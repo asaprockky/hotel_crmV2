@@ -1,0 +1,185 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reja Cheklovlari - Mehmonxona Boshqaruvi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Popup Overlay */
+        .popup-overlay {
+            display: none; /* Hidden by default */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Show popup when active */
+        .popup-overlay.active {
+            display: flex;
+        }
+
+        /* Popup Content */
+        .popup-content {
+            background-color: #030D28; /* Dark navy */
+            color: #FFFFFF;
+            width: 90%;
+            max-width: 500px;
+            padding: 20px;
+            border-radius: 15px;
+            position: relative;
+            text-align: center;
+            font-family: 'Montserrat', sans-serif;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Close Button */
+        .popup-close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 1.5rem;
+            color: #CDA274; /* Gold */
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .popup-close:hover {
+            color: #b58b5e; /* Darker gold on hover */
+        }
+
+        /* Popup Title */
+        .popup-title {
+            font-size: 1.5rem;
+            color: #CDA274;
+            margin-bottom: 15px;
+        }
+
+        /* Popup Message */
+        .popup-message {
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .popup-message strong {
+            color: #CDA274;
+        }
+
+        /* Popup List */
+        .popup-list {
+            list-style: none;
+            text-align: left;
+            margin: 0 auto 15px;
+            padding: 0 20px;
+            max-width: 400px;
+        }
+
+        .popup-list li {
+            font-size: 0.9rem;
+            margin: 5px 0;
+            position: relative;
+            padding-left: 15px;
+        }
+
+        .popup-list li::before {
+            content: "•";
+            color: #CDA274;
+            position: absolute;
+            left: 0;
+        }
+
+        /* Upgrade Button */
+        .popup-button {
+            display: inline-block;
+            background-color: #CDA274;
+            color: #030D28;
+            padding: 10px 20px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: background-color 0.2s;
+        }
+
+        .popup-button:hover {
+            background-color: #b58b5e;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .popup-content {
+                width: 95%;
+                padding: 15px;
+            }
+
+            .popup-title {
+                font-size: 1.3rem;
+            }
+
+            .popup-message {
+                font-size: 0.9rem;
+            }
+
+            .popup-list li {
+                font-size: 0.85rem;
+            }
+
+            .popup-button {
+                font-size: 0.9rem;
+                padding: 8px 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .popup-content {
+                max-width: 300px;
+            }
+
+            .popup-title {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="popup-overlay" id="basicPlanPopup">
+        <div class="popup-content">
+            <span class="popup-close" onclick="closePopup()">×</span>
+            <h2 class="popup-title">Cheklovlar Haqida Ogohlantirish</h2>
+            <p class="popup-message">
+                Siz hozirda <strong>Boshlang'ich</strong> rejada ekansiz. Ushbu funksiya faqat <strong>Standard</strong> yoki <strong>Premium</strong> rejalarda mavjud. Quyidagi cheklovlar amal qiladi:
+            </p>
+            <ul class="popup-list">
+                <li>10 tagacha xona boshqaruvi</li>
+                <li>Faqat rahbar uchun Telegram xabarnomalari</li>
+                <li>Soddalashtirilgan rezervatsiya tizimi</li>
+                <li>Asosiy hisobotlar (tahlilsiz)</li>
+            </ul>
+            <p class="popup-message">
+                Ko'proq imkoniyatlardan foydalanish uchun rejangizni yuksaltiring!
+            </p>
+            <a href="{% url 'payment' %}" class="popup-button">Rejani Yuksaltirish</a>
+        </div>
+    </div>
+
+    <script>
+        // Show popup if show_popup is True
+        {% if show_popup %}
+            document.getElementById('basicPlanPopup').classList.add('active');
+        {% endif %}
+
+        // Close popup function
+        function closePopup() {
+            document.getElementById('basicPlanPopup').classList.remove('active');
+        }
+    </script>
+</body>
+</html>

@@ -23,7 +23,8 @@
                         <p><strong>Passport:</strong> {{ data.client.passport_number }}</p>
                         <p><strong>Check-in:</strong> {{ data.check_in }}</p>
                         <p><strong>Check-out:</strong> {{ data.check_out|default:"Not checked out" }}</p>
-                        <p><strong>Balance:</strong> ${{ data.balance }}</p>
+                        <p><strong>Initial Deposit:</strong> ${{ data.balance }}</p>
+                        <p><strong>Has To Pay</strong> $ {{data.has_to_pay}}</p>
                     </div>
                 {% endfor %}
             {% else %}
@@ -31,12 +32,20 @@
             {% endif %}
         </div>
 
-        <a href="/close_room_list/" class="btn">Go Back</a>
-        <form action="{% url 'close_room' room.id %}" method="post">
-            {% csrf_token %}
-            <button type="submit" class="btn">Close Room</button>
-        </form>
-        
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <a href="/close_room_list/" class="btn">Go Back</a>
+
+            <form action="{% url 'close_room' room.id %}" method="post" style="margin: 0;">
+                {% csrf_token %}
+                <button type="submit" class="btn">Close Room</button>
+            </form>
+<!-- 
+            <form action="{% url 'edit_reservation' room.id %}" method="post" style="margin: 0;">
+                {% csrf_token %}
+                <button type="submit" class="btn">Edit Room</button>
+            </form> -->
+        </div>
+
 
     </div>
 

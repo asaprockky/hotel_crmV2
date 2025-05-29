@@ -28,7 +28,7 @@
             </div>
 
             <div class="room-price 
-                {% if room.status == 'reserved' %}
+                {% if room.is_available == 'reserved' %}
                     price-reserved
                 {% else %}
                     price-unavailable

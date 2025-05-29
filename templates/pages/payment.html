@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="uz">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To'lov Sahifasi - Mehmonxona Boshqaruvi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'admin/css/payment.css' %}">
+    {% csrf_token %}
+
+</head>
+<body>
+    {% include 'details/navbar.html' %}
+
+    <main class="main-content">
+        <header>
+            <h1 class="welcome-title">To'lov va <span class="highlight">Reja Tanlash</span></h1>
+        </header>
+
+        <section class="payment-date-card" aria-label="Keyingi to'lov sanasi">
+            <h3>Keyingi To'lov Sanasi:</h3>
+            <p>{{ next_payment_date }}</p>
+            <p>Balans: {{ balance }} so'm</p>
+        </section>
+
+<section class="plan-selection" aria-label="Reja tanlash">
+    <h2>Rejani Tanlang</h2>
+    <div class="plans">
+
+        <!-- Basic Plan -->
+        <div class="plan-card {% if plan == 'basic' %}current{% endif %}">
+            <h3>Basic</h3>
+            <p><strong>0 UZS/oy</strong> — Kichik mehmonxonalar</p>
+            <ul>
+                <li>10 tagacha xona</li>
+                <li>Rahbar uchun Telegram xabarnoma</li>
+                <li>Soddalashtirilgan rezervatsiya</li>
+                <li>Asosiy hisobot</li>
+            </ul>
+            {% if plan == 'basic' %}
+                <button disabled>Joriy Reja</button>
+            {% else %}
+                <button onclick="selectPlan('basic')">Tanlash</button>
+            {% endif %}
+        </div>
+
+        <!-- Standard Plan -->
+        <div class="plan-card popular {% if plan == 'standard' %}current{% endif %}">
+            <h3>Standard<span class="popular-label">Eng Mashhur</span></h3>
+            <p><strong>100,000 UZS/oy</strong> — O‘rtacha mehmonxonalar</p>
+            <ul>
+                <li>50 tagacha xona</li>
+                <li>Xodimlar uchun Telegram xabarnoma</li>
+                <li>Kunlik/haftalik moliyaviy tahlil</li>
+                <li>Excel eksport</li>
+            </ul>
+            {% if plan == 'standard' %}
+                <button disabled>Joriy Reja</button>
+            {% else %}
+                <button onclick="selectPlan('standard')">Tanlash</button>
+            {% endif %}
+        </div>
+
+        <!-- Premium Plan -->
+        <div class="plan-card {% if plan == 'premium' %}current{% endif %}">
+            <h3>Premium</h3>
+            <p><strong>250,000 UZS/oy</strong> — Yirik mehmonxonalar</p>
+            <ul>
+                <li>Cheksiz xonalar</li>
+                <li>Ko‘p xodim rollari</li>
+                <li>To‘liq moliyaviy hisobotlar</li>
+                <li>Multi-hotel boshqaruvi</li>
+            </ul>
+            {% if plan == 'premium' %}
+                <button disabled>Joriy Reja</button>
+            {% else %}
+                <button onclick="selectPlan('premium')">Tanlash</button>
+            {% endif %}
+        </div>
+
+    </div>
+</section>
+
+        <!-- Payment Options -->
+        <section class="payment-options" aria-label="To'lov usullari">
+            <h2>To'lov Usullari</h2>
+<div class="payment-methods">
+<!-- Click -->
+    <div class="payment-method" onclick="payWith('click')">
+    <div class="logo-wrapper">
+        <img src="https://api.logobank.uz/media/logos_png/Click-01_hjB080W.png" alt="Click">
+    </div>
+    </div>
+
+
+    <!-- Payme -->
+    <div class="payment-method" onclick="payWith('click')">
+    <div class="logo-wrapper">
+        <img src="https://api.logobank.uz/media/logos_preview/payme-01_dNOt8CM.png" alt="Click">
+    </div>
+    </div>
+
+
+    <!-- Bank Card -->
+    <div class="payment-method" onclick="payWith('card')">
+        <img src="https://cdn-icons-png.flaticon.com/512/633/633611.png" alt="Bank Kartasi" style="height: 50px;">
+        <p>Bank Kartasi</p>
+    </div>
+
+    <!-- Cash -->
+    <div class="payment-method" onclick="payWith('cash')">
+        <img src="https://cdn-icons-png.flaticon.com/512/2331/2331943.png" alt="Naqd Pul" style="height: 50px;">
+        <p>Naqd Pul</p>
+    </div>
+</div>
+
+        </section>
+    </main>
+
+    <script>
+function selectPlan(planName) {
+    if (confirm(`Siz haqiqatan ham "${planName}" rejasini tanlamoqchimisiz?`)) {
+        fetch("{% url 'payment' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}',
+            },
+            body: JSON.stringify({ plan: planName })
+        })
+        .then(async response => {
+            if (response.ok) {
+                alert('Reja muvaffaqiyatli yangilandi!');
+                location.reload();
+            } else {
+                const errorData = await response.json();
+                alert(errorData.error || 'Xatolik yuz berdi. Iltimos, qayta urinib ko‘ring.');
+            }
+        });
+
+    }
+}
+    </script>
+</body>
+</html>

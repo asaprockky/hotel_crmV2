@@ -74,6 +74,10 @@ body {
     
 }
 
+.price-reserved {
+    background: #FFBB33; /* Example: Orange color */
+}
+
 
 .room-price-link {
     text-decoration: none; /* Remove underline */

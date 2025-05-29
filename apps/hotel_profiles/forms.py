@@ -86,3 +86,13 @@ class RoomForm(forms.ModelForm):
         if price <= 0:
             raise forms.ValidationError("Price must be greater than zero.")
         return price
+    
+
+class EditReservationForm(forms.ModelForm):
+    class Meta:
+        model = Reservation
+        fields = ['check_in', 'check_out', 'room', 'deposit_amount']
+        widgets = {
+            'check_in': forms.DateInput(attrs={'type': 'date'}),
+            'check_out': forms.DateInput(attrs={'type': 'date'}),
+        }
