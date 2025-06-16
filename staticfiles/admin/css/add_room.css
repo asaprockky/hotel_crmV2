@@ -1,0 +1,202 @@
+/* Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', system-ui, sans-serif;
+}
+
+body {
+    background: #f8fafc;
+    color: #030D28;
+    min-height: 100vh;
+}
+
+/* Container Styles */
+.form-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 2rem;
+}
+
+.form-card {
+    background: #FFFFFF;
+    padding: 2.5rem;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(3, 13, 40, 0.08);
+    border: 1px solid rgba(3, 13, 40, 0.1);
+    width: 100%;
+    max-width: 400px;
+}
+
+/* Form Elements */
+.form-title {
+    color: #030D28;
+    font-size: 1.8rem;
+    text-align: center;
+    margin-bottom: 2rem;
+    font-weight: 700;
+}
+
+.custom-form .form-group {
+    margin-bottom: 1.75rem;
+}
+
+.custom-form label {
+    display: block;
+    font-weight: 600;
+    color: rgba(3, 13, 40, 0.9);
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.custom-form input,
+.custom-form select,
+.custom-form textarea {
+    width: 100%;
+    padding: 0.875rem 1.25rem;
+    border: 1px solid rgba(3, 13, 40, 0.15);
+    border-radius: 10px;
+    background: #FFFFFF;
+    font-size: 1rem;
+    color: #030D28;
+    transition: all 0.25s ease;
+}
+
+.custom-form input:focus,
+.custom-form select:focus {
+    outline: none;
+    border-color: #CDA274;
+    box-shadow: 0 0 0 3px rgba(205, 162, 116, 0.15);
+}
+/* Primary Submit Button */
+.btn-primary {
+    width: 100%;
+    padding: 1rem;
+    background: #CDA274;
+    color: #030D28;
+    border: none;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 2px 4px rgba(3, 13, 40, 0.1);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-top: 1.5rem;
+}
+
+.btn-primary:hover {
+    background: #B08E66;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(205, 162, 116, 0.2);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(3, 13, 40, 0.1);
+}
+
+/* Outline Back Button */
+.btn-outline {
+    width: 100%;
+    padding: 1rem;
+    background: transparent;
+    color: #030D28;
+    border: 2px solid #CDA274;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    text-align: center;
+    text-decoration: none;
+    display: block;
+    margin-top: 1rem;
+    letter-spacing: 0.5px;
+}
+
+.btn-outline:hover {
+    background: rgba(205, 162, 116, 0.08);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(205, 162, 116, 0.1);
+}
+
+.btn-outline:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+/* Button Container (if needed) */
+.button-group {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+/* Buttons */
+/* Checkbox Styling */
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 1.5rem 0;
+}
+
+input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    appearance: none;
+    border: 2px solid rgba(3, 13, 40, 0.15);
+    border-radius: 4px;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+input[type="checkbox"]:checked {
+    background: #CDA274;
+    border-color: #CDA274;
+}
+
+input[type="checkbox"]:checked::before {
+    content: "✓";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 0.9rem;
+}
+
+.checkbox-label {
+    font-weight: 500;
+    color: rgba(3, 13, 40, 0.9);
+    cursor: pointer;
+}
+
+/* Grid Layout */
+.form-grid {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+/* Specific Form Group Adjustments */
+.custom-form .form-group:not(.checkbox-group) {
+    margin-bottom: 0;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 480px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .checkbox-group {
+        margin: 1rem 0;
+    }
+}

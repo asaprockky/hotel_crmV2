@@ -1,0 +1,139 @@
+/* Modern Minimalist Design */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', system-ui, sans-serif;
+}
+
+body {
+    background: #FFFFFF;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    color: #030D28;
+}
+
+/* Container */
+.container {
+    background: #FFFFFF;
+    padding: 2.5rem;
+    border-radius: 24px;
+    box-shadow: 0 12px 24px rgba(3, 13, 40, 0.08);
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    border: 1px solid rgba(3, 13, 40, 0.1);
+}
+
+/* Heading */
+h2 {
+    color: #030D28;
+    font-size: 1.8rem;
+    margin-bottom: 2rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+/* Form Elements */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.input-group {
+    position: relative;
+}
+
+input[type="password"] {
+    width: 100%;
+    padding: 1rem 1.5rem;
+    border: 1px solid rgba(3, 13, 40, 0.15);
+    border-radius: 12px;
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+    background: #FFFFFF;
+    transition: all 0.2s ease;
+    color: #030D28;
+}
+
+input[type="password"]:focus {
+    border-color: #CDA274;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(205, 162, 116, 0.2);
+}
+
+label {
+    display: block;
+    font-size: 0.9rem;
+    color: rgba(3, 13, 40, 0.8);
+    margin-bottom: 0.5rem;
+    text-align: left;
+    font-weight: 500;
+}
+
+/* Button */
+button {
+    width: 100%;
+    padding: 1rem;
+    background: #CDA274;
+    color: #030D28;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 1rem;
+    letter-spacing: 0.5px;
+}
+
+button:hover {
+    background: #B08E66;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(205, 162, 116, 0.2);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+button:disabled {
+    background: rgba(3, 13, 40, 0.1);
+    color: rgba(3, 13, 40, 0.4);
+    cursor: not-allowed;
+}
+
+/* Status Messages */
+.message {
+    font-size: 0.9rem;
+    padding: 0.75rem;
+    border-radius: 8px;
+    margin-top: 1rem;
+    display: none;
+    border: 1px solid transparent;
+}
+
+.message.error {
+    background: rgba(205, 162, 116, 0.15);
+    border-color: rgba(205, 162, 116, 0.3);
+    color: #030D28;
+}
+
+.message.success {
+    background: rgba(205, 162, 116, 0.15);
+    border-color: rgba(205, 162, 116, 0.3);
+    color: #030D28;
+}
+
+/* Subtle Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.container {
+    animation: fadeIn 0.4s ease-out;
+}

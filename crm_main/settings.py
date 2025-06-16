@@ -161,6 +161,8 @@ MEDIA_URL = "/media/"
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_REDIRECT_URL = '/main'
+LOGIN_URL = '/login/'
+
 try:
     from crm_main.local_settings import *
 except ImportError:

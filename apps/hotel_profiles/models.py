@@ -5,6 +5,9 @@ from django.dispatch import receiver
 import random
 from django.utils import timezone
 from django.db.models import Q
+import logging
+from django.core.exceptions import ValidationError
+logger = logging.getLogger(__name__)
 ROOM_STATUS_CHOICES = [
     ('available', 'Available'),
     ('unavailable', 'Unavailable'),
@@ -69,13 +72,13 @@ class Plan(models.Model):
     max_rooms = models.PositiveIntegerField()
     telegram_notifications = models.BooleanField(default=True)
     financial_reports = models.BooleanField(default=False)
-    export_excel = models.BooleanField(default=False)
+    export_excel = models.BooleanField(default=False)   
     multi_hotel = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.name} ({self.price} UZS/oy)"
     
-    
+
 class Client(models.Model):
     full_name = models.CharField(max_length=100)
     passport_number = models.CharField(max_length=10, unique=True)
@@ -93,38 +96,68 @@ class Client(models.Model):
         return False
 
 class Reservation(models.Model):
+    
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE, related_name="reservations")
     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name="reservations")
     room = models.ForeignKey(Room, on_delete=models.SET_NULL, null=True, blank=True, related_name="reservations")
     deposit_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    status = models.CharField(max_length=30, choices=ROOM_STATUS_CHOICES
+                              , default="unavailable")
     check_in = models.DateField()
     check_out = models.DateField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def clean(self):
+        if self.check_out and self.check_in > self.check_out:
+            raise ValidationError("Check-in date must be before or equal to check-out date.")
+
     def save(self, *args, **kwargs):
+        logger.debug(f"Saving reservation: check_in={self.check_in}, check_out={self.check_out}")
+        if self.room and self.check_out:
+            conflicts = Reservation.objects.filter(
+                room_id=self.room.id,
+                check_in__lt=self.check_out,
+                check_out__gt=self.check_in
+            ).exclude(id=self.id)
+            if conflicts.exists():
+                raise ValidationError("Room is already booked for the selected dates.")
+        
         if self.room:
             today = timezone.localdate()
-            print(today)
             if self.check_in == today:
-                self.room.is_available = 'unavailable'  # Use valid choice
+                self.status = 'unavailable'
+                self.room.is_available = 'unavailable'
                 self.room.save()
             elif self.check_in > today:
-                self.room.is_available = 'reserved'  # Use valid choice
+                self.status = 'reserved'
+                self.room.is_available = 'reserved'
                 self.room.save()
         super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
+        room = self.room
         super().delete(*args, **kwargs)
-        if self.room:
+        if room:
+            today = timezone.localdate()
             has_other_reservations = Reservation.objects.filter(
-                room=self.room, check_out__isnull=True
+                room=room,
+                check_in__lte=today,
+                check_out__gte=today
             ).exists()
             if not has_other_reservations:
-                self.room.is_available = 'available'  # Use valid choice
-                self.room.save()
+                room.is_available = 'available'
+                room.save()
 
     def __str__(self):
         return f"Reservation by {self.client.full_name} for Room {self.room.room_number if self.room else 'N/A'} at {self.hotel.user.username}"
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['check_in']),
+            models.Index(fields=['check_out']),
+        ]
+
+
 
 class DailyReservation(models.Model):
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE, related_name="daily_reservations")

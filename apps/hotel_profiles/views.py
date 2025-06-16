@@ -14,6 +14,7 @@ from django.http import HttpResponseForbidden
 from django.views.generic.edit import FormView
 from .bot import send_notification
 import json
+from django.core.exceptions import ValidationError
 from django.http import JsonResponse
 class ShowRoomsView(LoginRequiredMixin, ListView):
     model = Room
@@ -100,13 +101,18 @@ class ReservationCreateView(LoginRequiredMixin, CreateView):
             form.add_error(None, 'This room is not available.')
             return self.form_invalid(form)
 
+                    
+
         # Extract form data
         full_name = form.cleaned_data['full_name']
         passport_number = form.cleaned_data['passport_number']
         deposit = form.cleaned_data['deposit_amount']
         check_in = form.cleaned_data['check_in']
         check_out = form.cleaned_data['check_out']
-
+        conflicting_reservations =  Reservation.objects.filter(room_id = room.id, check_in__lte = check_out, check_out__gte=check_in)
+        if conflicting_reservations.exists():
+            form.add_error(None, 'Xona Ushbu sanalarda mavjud emas')
+            return self.form_invalid(form)
         # Get or create client for this hotel
         client, created = Client.objects.get_or_create(
             passport_number=passport_number,

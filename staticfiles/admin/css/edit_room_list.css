@@ -27,7 +27,7 @@ body {
     gap: 20px;
     justify-content: left;
     padding:20px ;
-    padding-left: 400px;
+    padding-left: 100px;
 }
 
 .room-card {
@@ -74,10 +74,6 @@ body {
     
 }
 
-.price-reserved {
-    background: #FFBB33; /* Example: Orange color */
-}
-
 
 .room-price-link {
     text-decoration: none; /* Remove underline */
@@ -85,10 +81,4 @@ body {
     font-size: inherit; /* Match text size of surrounding text */
     font-weight: inherit; /* Match weight of other text */
   }
-
-.disabled-link {
-    pointer-events: none; /* Disable clicks */
-    color: gray;
-    text-decoration: none;
-    cursor: default;
-}
+  

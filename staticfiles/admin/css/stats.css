@@ -1,81 +1,118 @@
-/* Base Styles */
-.stats-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-    margin-left: 250px; /* Adjust based on navbar width */
-    transition: margin 0.3s ease;
-}
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
 
 body {
     background-color: #030D28;
-    color: #EEEEEE;
-    font-family: 'Arial', sans-serif;
+    color: white;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
     margin: 0;
+    padding: 0;
+}
+
+
+.main-content {
+    margin-left: 310px;
+    padding: 30px 20px; /* Reduced side padding for compactness */
+    width: calc(100% - 310px);
     min-height: 100vh;
+    max-width: 1000px; /* Added to cap content width */
 }
 
-/* Header Styles */
-.stats-header {
-    margin-bottom: 30px;
-    padding: 20px 0;
-    border-bottom: 2px solid #CDA274;
-}
-
-.hotel-name {
-    font-size: 24px;
-    color: #FFFFFF;
-    margin-right: 20px;
-}
-
-.current-balance {
-    font-size: 18px;
+.welcome-title {
+    font-size: 2rem;
     color: #CDA274;
-}
-
-/* Metrics Grid */
-.metrics-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
     margin-bottom: 30px;
 }
 
-.metric-card {
-    background-color: #030D28;
+.stats-section {
+    margin-bottom: 40px;
+}
+
+.stats-section h2 {
+    font-size: 1.5rem;
+    color: #CDA274;
+    margin-bottom: 20px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* Smaller card width */
+    gap: 20px;
+}
+
+.stat-card {
+    background-color: #EEEEEE;
+    color: #030D28;
     padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    border-radius: 15px;
+    text-align: center;
+    transition: transform 0.2s;
 }
 
-.metric-value {
-    font-size: 32px;
+.stat-card:hover {
+    transform: scale(1.05);
+}
+
+.stat-card h3 {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+}
+
+.stat-card p {
+    font-size: 1.5rem;
     font-weight: bold;
-    margin: 10px 0;
 }
 
-/* Rest of your CSS styles from original */
-/* ... */
+.charts-section {
+    margin-top: 50px;
+}
 
-/* Responsive Design */
-@media (max-width: 1200px) {
-    .stats-container {
+.charts-section h2 {
+    font-size: 1.5rem;
+    color: #CDA274;
+    margin-bottom: 20px;
+}
+
+.chart-container {
+    width: 100%;
+    max-width: 500px; /* Reduced from 600px */
+    margin: 20px auto;
+    background-color: #FFFFFF;
+    padding: 10px;
+    border-radius: 15px;
+}
+
+@media (max-width: 1024px) {
+    .main-content {
         margin-left: 0;
+        width: 100%;
         padding: 20px;
-    }
-    
-    .charts-grid {
-        grid-template-columns: 1fr;
+        max-width: 100%; /* Full width on smaller screens */
     }
 }
 
 @media (max-width: 768px) {
-    .metrics-grid {
-        grid-template-columns: 1fr;
+    .welcome-title {
+        font-size: 1.5rem;
     }
-    
-    .activity-item {
-        flex-direction: column;
-        align-items: flex-start;
+
+    .stats-section h2 {
+        font-size: 1.3rem;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); /* Even smaller for mobile */
+    }
+
+    .stat-card h3 {
+        font-size: 1rem;
+    }
+
+    .stat-card p {
+        font-size: 1.2rem;
+    }
+
+    .chart-container {
+        max-width: 100%;
     }
 }
