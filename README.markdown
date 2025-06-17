@@ -3,9 +3,11 @@
 A Django-based Hotel CRM and Point of Sale (POS) system designed for hotel owners in Uzbekistan to streamline reservation management and enhance guest experiences. This system offers features such as dynamic room availability checks, Telegram notifications, and a modern, responsive reservation interface.
 ## 🚀 Demo
 
-Check out the live demo: [Demo Link](https://fulstek.uz/hotel_crm/)
-Username : testgithub
-Password : FollowMe
+Check out the live demo: [Demo Link](https://your-demo-link.com)
+
+**Username:** `testgithub`  
+**Password:** `FollowMe`
+
 
 ## Features
 
