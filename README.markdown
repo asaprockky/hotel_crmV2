@@ -61,7 +61,7 @@ hotel-crm/
 1. **Clone the Repository**:
 
    ```bash
-   git clone https://github.com/your-username/hotel-crm.git
+   git clone https://github.com/asaprockky/hotel_crmV2.git
    cd hotel-crm
    ```
 
