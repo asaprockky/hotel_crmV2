@@ -81,7 +81,7 @@ class Plan(models.Model):
 
 class Client(models.Model):
     full_name = models.CharField(max_length=100)
-    passport_number = models.CharField(max_length=10, unique=True)
+    passport_number = models.CharField(max_length=10, unique=False)
     balance = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     created_at = models.DateTimeField(auto_now_add=True)
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE, default= 1)

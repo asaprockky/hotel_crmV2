@@ -16,17 +16,20 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
-CSRF_TRUSTED_ORIGINS = ["https://hotelcrmv2-production.up.railway.app"]
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-%5&-ew6f7ssj3sf-u&ia=4&15v)sqx&ixhw0upy@-$mpb&t!pw'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-ALLOWED_HOSTS = ['*']
+DEBUG = False
+ALLOWED_HOSTS = ['fulstek.uz', 'www.fulstek.uz']
 
+CSRF_TRUSTED_ORIGINS = ['https://fulstek.uz']
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_SSL_REDIRECT = True
+
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
 
 
 # Application definition
@@ -116,8 +119,11 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
+TIME_ZONE = 'UTC'
+
 USE_I18N = True
 
+USE_TZ = True
 import dj_database_url
 import os
 
@@ -131,10 +137,6 @@ DATABASES = {
         "PORT": "5432"
     }
 }
-
-TIME_ZONE = 'Asia/Tashkent'
-USE_TZ = True
-
 # settings.py
 # DATABASES = {
 #     'default': dj_database_url.parse(os.getenv('DATABASE_URL'))
@@ -160,9 +162,7 @@ MEDIA_URL = "/media/"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-LOGIN_REDIRECT_URL = '/main'
-LOGIN_URL = '/login/'
-
+LOGIN_REDIRECT_URL = '/main_page/'
 try:
     from crm_main.local_settings import *
 except ImportError:
