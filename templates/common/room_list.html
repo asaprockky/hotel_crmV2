@@ -10,11 +10,80 @@
     <link rel="stylesheet" href="{% static 'admin/css/room_list.css' %}" />
 </head>
 <body>
+    
     <div class="container">
         {% include 'details/navbar.html' %}
 
         <div class="col-md-9 main-content">
             <h1 class="title">List of <span class="highlight">available rooms</span></h1>
+            <!-- Add this above your room container -->
+<div class="filter-container">
+    <form method="get" class="filter-form">
+        <div class="filter-row">
+            <div class="filter-group">
+                <label for="room_type">Room Type:</label>
+                <select name="room_type" id="room_type">
+                    <option value="">All Types</option>
+                    {% for type in room_types %}
+                        <option value="{{ type }}" {% if request.GET.room_type == type %}selected{% endif %}>{{ type }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label for="capacity">Guests:</label>
+                <input type="number" name="capacity" id="capacity" min="1" 
+                       value="{{ request.GET.capacity }}" placeholder="Min guests">
+            </div>
+            
+            <div class="filter-group">
+                <label for="air_conditioning">AC:</label>
+                <input type="checkbox" name="air_conditioning" id="air_conditioning" 
+                       {% if request.GET.air_conditioning %}checked{% endif %}>
+            </div>
+        </div>
+        
+        <div class="filter-row">
+            <div class="filter-group">
+                <label for="min_price">Min Price:</label>
+                <input type="number" name="min_price" id="min_price" 
+                       value="{{ request.GET.min_price }}" placeholder="$">
+            </div>
+            
+            <div class="filter-group">
+                <label for="max_price">Max Price:</label>
+                <input type="number" name="max_price" id="max_price" 
+                       value="{{ request.GET.max_price }}" placeholder="$">
+            </div>
+            
+            <div class="filter-group">
+                <label for="room_number">Room #:</label>
+                <input type="text" name="room_number" id="room_number" 
+                       value="{{ request.GET.room_number }}" placeholder="Room number">
+            </div>
+        </div>
+        
+        <div class="filter-row">
+            <div class="filter-group">
+                <label for="check_in">Check-in:</label>
+                <input type="date" name="check_in" id="check_in" 
+                       value="{{ request.GET.check_in }}">
+            </div>
+            
+            <div class="filter-group">
+                <label for="check_out">Check-out:</label>
+                <input type="date" name="check_out" id="check_out" 
+                       value="{{ request.GET.check_out }}">
+            </div>
+            
+            <div class="filter-group">
+                <button type="submit" class="filter-button">Filter</button>
+                <a href="{% url 'room_list' %}" class="reset-button">Reset</a>
+            </div>
+        </div>
+    </form>
+</div>
+
             <div class="room-container">
                 {% for room in rooms %}
         <div class="room-card 
@@ -60,3 +129,253 @@
     </div>
 </body>
 </html>
+
+
+<style>
+/* Base Styles */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+
+body {
+    background-color: #030D28;
+    color: white;
+    font-family: 'Montserrat', sans-serif;
+    text-align: center;
+    font-weight: 600;
+    margin: 0;
+    padding: 0;
+}
+
+/* Layout */
+.navbar {
+    position: fixed;
+}
+
+.main-content {
+    margin-left: 260px;
+    padding: 20px;
+}
+
+.title {
+    color: white;
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    text-align: left;
+    padding-left: 100px;
+}
+
+.highlight {
+    color: #CDA274;
+}
+
+/* Room Cards */
+.room-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: left;
+    padding: 20px;
+    padding-left: 100px;
+}
+
+.room-card {
+    width: 200px;
+    border-radius: 22px;
+    overflow: hidden;
+    background: #EEEEEE;
+    text-align: center;
+    font-family: 'Montserrat', sans-serif;
+    height: 120px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.room-card:hover {
+    transform: translateY(-5px);
+}
+
+.room-info {
+    padding: 10px;
+    background: #eee;
+    height: 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.room-info h4 {
+    margin: 2px 0;
+    font-size: 18px;
+    color: #030D28;
+}
+
+.room-type {
+    margin: 0;
+    font-size: 16px;
+    color: #CDA274;
+}
+
+.room-price {
+    padding: 5px;
+    font-size: 16px;
+    font-weight: 600;
+    color: white;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.price-available {
+    background: #2BBE2A;
+}
+
+.price-unavailable {
+    background: #F44842;
+}
+
+.price-reserved {
+    background: #FFBB33;
+}
+
+/* Filter System */
+.filter-container {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 8px;
+    margin: 20px 100px;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.filter-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.filter-row {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 8px 12px;
+    border-radius: 6px;
+}
+
+.filter-group label {
+    font-weight: 500;
+    color: white;
+}
+
+.filter-group input,
+.filter-group select {
+    padding: 6px 10px;
+    border-radius: 4px;
+    border: none;
+    background: rgba(255, 255, 255, 0.9);
+}
+
+.filter-button, 
+.reset-button {
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.filter-button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+}
+
+.filter-button:hover {
+    background-color: #3e8e41;
+}
+
+.reset-button {
+    background-color: #f44336;
+    color: white;
+    text-decoration: none;
+    border: none;
+}
+
+.reset-button:hover {
+    background-color: #d32f2f;
+}
+
+/* Links */
+.room-price-link {
+    text-decoration: none;
+    color: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.room-price-link.disabled {
+    pointer-events: none;
+    cursor: default;
+    opacity: 0.6;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .main-content {
+        margin-left: 0;
+        padding-top: 80px;
+    }
+    
+    .room-container,
+    .title {
+        padding-left: 20px;
+    }
+    
+    .filter-container {
+        margin: 20px;
+    }
+    
+    .filter-row {
+        flex-direction: column;
+    }
+    
+    .filter-group {
+        width: 100%;
+    }
+    
+    .room-card {
+        width: 100%;
+    }
+}
+
+/* Status Indicators */
+.status-indicator {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+.status-available {
+    background-color: #2BBE2A;
+}
+
+.status-reserved {
+    background-color: #FFBB33;
+}
+
+.status-unavailable {
+    background-color: #F44842;
+}
+</style>

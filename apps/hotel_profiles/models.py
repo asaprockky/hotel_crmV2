@@ -59,6 +59,9 @@ class Room(models.Model):
     room_number = models.CharField(max_length=6)
     room_type = models.CharField(max_length=20)
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    capacity = models.PositiveIntegerField(default=1, help_text="Maximum number of guests")
+    floor = models.PositiveIntegerField(default=1)
+    air_conditioning = models.BooleanField(default=False)
     is_available = models.CharField(max_length= 15, choices= ROOM_STATUS_CHOICES, default= "available" )
     
 

@@ -24,6 +24,7 @@ SECRET_KEY = 'django-insecure-%5&-ew6f7ssj3sf-u&ia=4&15v)sqx&ixhw0upy@-$mpb&t!pw
 DEBUG = False
 ALLOWED_HOSTS = ['fulstek.uz', 'www.fulstek.uz']
 
+
 CSRF_TRUSTED_ORIGINS = ['https://fulstek.uz']
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SECURE_SSL_REDIRECT = True
@@ -70,6 +71,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
 
@@ -129,20 +131,22 @@ import os
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "rairailwaylway",
-        "USER": "postgres",
-        "PASSWORD": "YJWUOjmQwdvVMhfafjOVydEhKYCdUgjS",
-        "HOST": "postgres-jjxv.railway.internal",
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "NAME": "fulstek1_hotel_crm",
+        "USER": "fulstek1_asap",
+        "PASSWORD": "14042005Fayz.",
+        "HOST": "localhost",
         "PORT": "5432"
     }
 }
-# settings.py
+
+
 # DATABASES = {
-#     'default': dj_database_url.parse(os.getenv('DATABASE_URL'))
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
 # }
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.1/howto/static-files/
 import os
 STATIC_URL = '/static/'  # Ensure this starts with a forward slash
 

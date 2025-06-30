@@ -68,10 +68,11 @@ class RoomForm(forms.ModelForm):
 
     class Meta:
         model = Room
-        fields = ['room_number', 'room_type', 'price', 'is_available']
+        fields = ['room_number', 'room_type', 'price', 'is_available', 'capacity']
         widgets = {
             'room_number': forms.TextInput(attrs={'class': 'form-control'}),
-            'price': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
+            'price': forms.NumberInput(attrs={'class': 'form-control', 'step': '1000'}),
+            'capacity': forms.NumberInput(attrs={'class': 'form-control', 'step': '2'}),
             'is_available': forms.Select(attrs={'class': 'form-select'}),
         }
 

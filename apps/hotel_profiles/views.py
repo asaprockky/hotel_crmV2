@@ -8,6 +8,7 @@ from .forms import ReservationForm , EditReservationForm, getTgId, RoomForm
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.timezone import now
 from datetime import timedelta, date
+import datetime
 from django.db import transaction
 from django.db.models import Sum, Avg, F 
 from django.http import HttpResponseForbidden
@@ -18,18 +19,53 @@ from django.core.exceptions import ValidationError
 from django.http import JsonResponse
 class ShowRoomsView(LoginRequiredMixin, ListView):
     model = Room
-    template_name = 'common/room_list.html'  # Ensure this file exists
-    context_object_name = 'rooms'  # This is how rooms will be accessed in the template
+    template_name = 'common/room_list.html'
+    context_object_name = 'rooms'
 
     def get_queryset(self):
-        """Filter rooms based on the logged-in user's hotel"""
-        hotel = self.request.user.hotel  # Assuming a user owns one hotel
-        return Room.objects.filter(hotel=hotel)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['extra_rooms'] = range(6)  # Ensuring the template gets range(6)
-        return context
+        queryset = super().get_queryset().filter(hotel=self.request.user.hotel)
+        
+        # Get filter parameters from GET request
+        room_type = self.request.GET.get('room_type')
+        min_price = self.request.GET.get('min_price')
+        max_price = self.request.GET.get('max_price')
+        capacity = self.request.GET.get('capacity')
+        air_conditioning = self.request.GET.get('air_conditioning')
+        room_number = self.request.GET.get('room_number')
+        check_in = self.request.GET.get('check_in')
+        check_out = self.request.GET.get('check_out')
+        
+        # Apply filters
+        if room_type:
+            queryset = queryset.filter(room_type=room_type)
+        if min_price:
+            queryset = queryset.filter(price__gte=min_price)
+        if max_price:
+            queryset = queryset.filter(price__lte=max_price)
+        if capacity:
+            queryset = queryset.filter(capacity__gte=capacity)
+        if air_conditioning:
+            queryset = queryset.filter(air_conditioning=True)
+        if room_number:
+            queryset = queryset.filter(room_number__icontains=room_number)
+        
+        # Date range filtering (check for reservations in this period)
+        if check_in and check_out:
+            try:
+                check_in_date = datetime.strptime(check_in, '%Y-%m-%d').date()
+                check_out_date = datetime.strptime(check_out, '%Y-%m-%d').date()
+                
+                # Get rooms that have conflicting reservations
+                reserved_rooms = Reservation.objects.filter(
+                    Q(check_in__lt=check_out_date) & Q(check_out__gt=check_in_date)
+                ).values_list('room_id', flat=True)
+                
+                # Exclude reserved rooms
+                queryset = queryset.exclude(id__in=reserved_rooms)
+            except ValueError:
+                pass
+        
+        return queryset
     
 class ShowReservedRooms(LoginRequiredMixin, ListView):
     model = Room
@@ -64,12 +100,24 @@ class ReservationCreateView(LoginRequiredMixin, CreateView):
         """Pre-fill the form with the room from the URL."""
         room = self._get_room()
         return {'room': room}
+    
+    def get_reserved_dates(self):
+        room = self._get_room()
+        today = timezone.now().date()
+        reservations = Reservation.objects.filter(room = room, check_out__gte = today).values_list('check_in', 'check_out')
+        reserved = set()
+        for check_in, check_out in reservations:
+            # loop over the span of each booking (inclusive of check_out)
+            for n in range((check_out - check_in).days + 1):
+                reserved.add((check_in + datetime.timedelta(days=n)).isoformat())
 
+        return sorted(reserved)
     def get_context_data(self, **kwargs):
-        """Add room to the template context."""
         context = super().get_context_data(**kwargs)
         context['room'] = self._get_room()
+        context['reserved_dates'] = self.get_reserved_dates()
         return context
+
 
     def _get_room(self):
         """Helper method to fetch the room from URL parameter."""
@@ -294,6 +342,7 @@ class CloseRoomCommand(View):
             reservation.save()
             client.save()
             room.save()
+            Reservation.objects.filter(id = reservation.id).delete()
         profit = client.balance
         self.send_message_to_boss(reservation,profit, days_stayed)
         print("Room closed successfully.")

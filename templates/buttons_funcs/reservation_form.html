@@ -9,21 +9,297 @@
     <title>Reserve Room - Hotel CRM</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'admin/css/reservation_form.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-  {% include 'details/navbar.html' %}
+{% include 'details/navbar.html' %}
     <div class="main-content">
         <div class="reservation-card">
-            <h3>Reserve a Room</h3>
-            <form method="POST">
+            <h3><i class="fas fa-calendar-check"></i> Reserve a Room</h3>
+
+            {# Show booking calendar with unavailable dates #}
+            {% if reserved_dates %}
+            <div class="availability-section">
+                <h5><i class="fas fa-calendar-times"></i> Unavailable Dates</h5>
+                <div class="calendar-container">
+                    <div class="calendar-navigation">
+                        <button id="prev-month"><i class="fas fa-chevron-left"></i></button>
+                        <h4 id="current-month">Loading...</h4>
+                        <button id="next-month"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                    <div class="calendar-grid" id="calendar">
+                        <!-- Calendar will be populated by JavaScript -->
+                    </div>
+                </div>
+                <p class="text-muted"><i class="fas fa-info-circle"></i> Grayed out dates are already booked</p>
+            </div>
+            {% endif %}
+
+            <form method="POST" id="reservation-form">
                 {% csrf_token %}
                 {{ form|crispy }}
                 <div class="buttons-wrapper">
-                <button type="submit" class="btn btn-primary mt-3">Reserve</button>
-                <a href="{% url 'room_list' %}" class="btn-secondary">Back to Rooms</a>
+                    <button type="submit" class="btn btn-primary mt-3">
+                        <i class="fas fa-check"></i> Confirm Reservation
+                    </button>
+                    <a href="{% url 'room_list' %}" class="btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Back to Rooms
+                    </a>
                 </div>
             </form>
         </div>
     </div>
+
+    {# Convert reserved_dates into JavaScript #}
+    {{ reserved_dates|json_script:"reservedDates" }}
+
+    <script>
+    const reservedDates = JSON.parse(document.getElementById('reservedDates').textContent);
+    
+    // Date formatting helper
+    function formatDate(date) {
+        return date.toISOString().split('T')[0];
+    }
+
+    // Calendar functionality
+    if (reservedDates.length > 0) {
+        let currentDate = new Date();
+        
+        function renderCalendar() {
+            const calendarEl = document.getElementById('calendar');
+            const monthDisplay = document.getElementById('current-month');
+            
+            // Clear previous calendar
+            calendarEl.innerHTML = '';
+            
+            // Set month display
+            monthDisplay.textContent = currentDate.toLocaleString('default', { 
+                month: 'long', 
+                year: 'numeric' 
+            });
+            
+            // Get first day of month and total days
+            const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+            const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+            const daysInMonth = lastDay.getDate();
+            
+            // Create day headers
+            const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            dayNames.forEach(day => {
+                const dayHeader = document.createElement('div');
+                dayHeader.className = 'calendar-day-header';
+                dayHeader.textContent = day;
+                calendarEl.appendChild(dayHeader);
+            });
+            
+            // Add empty cells for days before the first day of month
+            for (let i = 0; i < firstDay.getDay(); i++) {
+                const emptyCell = document.createElement('div');
+                emptyCell.className = 'calendar-day empty';
+                calendarEl.appendChild(emptyCell);
+            }
+            
+            // Add days of month
+            for (let day = 1; day <= daysInMonth; day++) {
+                const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+                const dateStr = formatDate(date);
+                
+                const dayCell = document.createElement('div');
+                dayCell.className = 'calendar-day';
+                dayCell.textContent = day;
+                
+                // Mark reserved dates
+                if (reservedDates.includes(dateStr)) {
+                    dayCell.classList.add('booked');
+                    dayCell.innerHTML = `<span>${day}</span><i class="fas fa-times"></i>`;
+                }
+                
+                // Mark today
+                const today = new Date();
+                if (date.getDate() === today.getDate() && 
+                    date.getMonth() === today.getMonth() && 
+                    date.getFullYear() === today.getFullYear()) {
+                    dayCell.classList.add('today');
+                }
+                
+                calendarEl.appendChild(dayCell);
+            }
+        }
+        
+        // Navigation
+        document.getElementById('prev-month').addEventListener('click', () => {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            renderCalendar();
+        });
+        
+        document.getElementById('next-month').addEventListener('click', () => {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            renderCalendar();
+        });
+        
+        // Initial render
+        renderCalendar();
+    }
+
+    // Date input validation
+    function setupDateValidation() {
+        const checkInInput = document.getElementById('id_check_in');
+        const checkOutInput = document.getElementById('id_check_out');
+        
+        if (checkInInput && checkOutInput) {
+            // Set minimum date to today
+            const today = formatDate(new Date());
+            checkInInput.min = today;
+            checkOutInput.min = today;
+            
+            // When check-in changes, update check-out min date
+            checkInInput.addEventListener('change', () => {
+                if (checkInInput.value) {
+                    checkOutInput.min = checkInInput.value;
+                    if (checkOutInput.value && checkOutInput.value < checkInInput.value) {
+                        checkOutInput.value = '';
+                    }
+                }
+            });
+            
+            // Validate against reserved dates
+            [checkInInput, checkOutInput].forEach(input => {
+                input.addEventListener('change', () => {
+                    if (input.value && reservedDates.includes(input.value)) {
+                        alert('⚠️ The selected date is already booked. Please choose another.');
+                        input.value = '';
+                        input.focus();
+                    }
+                });
+            });
+        }
+    }
+    
+    // Initialize everything when DOM is loaded
+    document.addEventListener('DOMContentLoaded', () => {
+        setupDateValidation();
+    });
+    </script>
+
+    <style>
+    /* Additional styles for the enhanced calendar */
+    .availability-section {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        border: 1px solid #eaeaea;
+    }
+    
+    .calendar-container {
+        max-width: 400px;
+        margin: 1rem auto;
+    }
+    
+    .calendar-navigation {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+    
+    .calendar-navigation button {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 1.2rem;
+        color: #333;
+    }
+    
+    .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 5px;
+    }
+    
+    .calendar-day-header {
+        text-align: center;
+        font-weight: bold;
+        padding: 5px;
+        font-size: 0.9rem;
+        color: #666;
+    }
+    
+    .calendar-day {
+        text-align: center;
+        padding: 10px;
+        border-radius: 4px;
+        cursor: default;
+        position: relative;
+    }
+    
+    .calendar-day.empty {
+        visibility: hidden;
+    }
+    
+    .calendar-day.booked {
+        background-color: #ffecec;
+        color: #ff6b6b;
+        text-decoration: line-through;
+    }
+    
+    .calendar-day.today {
+        background-color: #e3f2fd;
+        font-weight: bold;
+    }
+    
+    .calendar-day.booked i {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 1.5rem;
+        opacity: 0.3;
+    }
+    
+    .calendar-day.booked span {
+        opacity: 0.5;
+    }
+    
+    .buttons-wrapper {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+    
+    .btn-primary {
+        background-color: #4a6baf;
+        color: white;
+        padding: 0.5rem 1.5rem;
+        border-radius: 4px;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+    
+    .btn-primary:hover {
+        background-color: #3a5a9f;
+    }
+    
+    .btn-secondary {
+        display: inline-block;
+        padding: 0.5rem 1.5rem;
+        border-radius: 4px;
+        background-color: #f1f1f1;
+        color: #333;
+        text-decoration: none;
+        transition: background-color 0.3s;
+    }
+    
+    .btn-secondary:hover {
+        background-color: #e1e1e1;
+    }
+    
+    .text-muted {
+        color: #6c757d;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+    }
+    </style>
 </body>
 </html>
