@@ -56,7 +56,7 @@ class TgId(models.Model):
         ]
 class Room(models.Model):
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE, related_name="rooms")
-    room_number = models.CharField(max_length=6)
+    room_number = models.IntegerField(max_length=6)
     room_type = models.CharField(max_length=20)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     capacity = models.PositiveIntegerField(default=1, help_text="Maximum number of guests")

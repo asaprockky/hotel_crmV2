@@ -1,56 +1,54 @@
 /* GLOBAL RESETS */
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
 
-
-
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     font-family: 'Montserrat', sans-serif;
     font-weight: 600;
-  }
-  
-  /* BODY WRAPPER */
-  body {
+}
+
+/* BODY WRAPPER */
+body {
     background-color: #0B1326; /* Dark navy background for main content */
     color: #FFFFFF;
-  }
-  
-  /* LAYOUT WRAPPER */
-  .wrapper {
-    display: flex;
-  }
-  
+}
 
-  /* MAIN CONTENT */
-  .main-content {
-    margin-left:90px; /* Same width as sidebar */
+/* LAYOUT WRAPPER */
+.wrapper {
+    display: flex;
+    flex-direction: row;
+}
+
+/* MAIN CONTENT */
+.main-content {
+    margin-left: 90px; /* Same width as sidebar */
     padding: 40px;
     width: 100%;
     min-height: 100vh;
     background-color: #0B1326;
-  }
-  
-  /* WELCOME TITLE */
-  .welcome-title {
+}
+
+/* WELCOME TITLE */
+.welcome-title {
     font-size: 2rem;
     color: #FFFFFF;
-  }
-  
-  .highlight {
+}
+
+.highlight {
     color: #CDA274; /* Gold-ish color for highlight */
-  }
-  
-  /* TOP CARDS SECTION */
-  .top-cards {
+}
+
+/* TOP CARDS SECTION */
+.top-cards {
     display: flex;
     flex-wrap: wrap;
     gap: 30px;
     margin-top: 30px;
-  }
-  
-  .card {
+}
+
+.card {
     background-color: #EEEEEE; 
     border-radius: 35px;
     padding: 20px;
@@ -58,98 +56,102 @@
     flex-direction: column;
     color: #030D28;
     height: 200px;
-    width: 500px;
-    
-  }
-  
-  .date-card {
+    width: 100%;
+    max-width: 500px;
+    flex: 1 1 300px; /* Flexible width with minimum */
+}
+
+/* DATE CARD */
+.date-card {
     display: flex;
-    align-items: center;  /* Align items vertically in the center */
+    align-items: center; /* Align items vertically in the center */
     gap: 20px; /* Add space between the two elements */
-  }
-  
-  .card-title, .card-subtitle {
+}
+
+/* CARD TITLE AND SUBTITLE */
+.card-title, .card-subtitle {
     display: flex;
     align-items: center;
     gap: 5px; /* Add space between the icon and text */
     padding-left: 15px;
-  }
-  
-  .card-icon {
+}
+
+.card-icon {
     width: 24px;
     height: 24px;
     margin-right: 8px;
-  }
-  
-  /* MINI CALENDAR (OPTIONAL) */
-  .mini-calendar {
+}
+
+/* MINI CALENDAR (OPTIONAL) */
+.mini-calendar {
     margin-top: 8px;
     display: flex;
     flex-direction: column;
+}
 
-  }
-  .date-wrapper{
+.date-wrapper {
     width: 100%;
     display: flex;
     justify-content: space-evenly;
     align-items: center;
-    gap: 120px;
+    gap: 20px; /* Reduced gap for smaller screens */
     margin-top: 15px;
-    
-  }
-  .days, .dates {
+}
+
+.days, .dates {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 30px;
+    gap: 10px; /* Reduced gap for responsiveness */
     font-size: 1rem;
     text-align: center;
     color: #030D28;
     padding: 10px;
-  }
-  
-  .today {
+}
+
+.today {
     color: #CDA274;
     font-weight: bold;
-  }
-  
-  /* NOTIFICATIONS */
-  .notifications-card .notification-list {
+}
+
+/* NOTIFICATIONS */
+.notifications-card .notification-list {
     list-style: none;
     margin-top: 15px;
     font-size: 0.9rem;
     color: #030D28;
     padding-left: 15px;
-    
-  }
-  
-  .notifications-card .notification-list li {
+}
+
+.notifications-card .notification-list li {
     margin: 5px 0;
     padding: 5px;
-  }
-  /* STATS SECTION */
+}
+
+/* STATS SECTION */
 .stats-cards {
     margin-top: 50px;
-  }
-  
-  .stat-card {
+}
+
+.stat-card {
     background-color: #EEEEEE;
-    border-radius: 30px; /* Reduce border radius if needed */
-    padding: 15px; /* Reduce padding */
+    border-radius: 30px;
+    padding: 15px;
     text-align: center;
     color: #030D28;
     display: flex;
     justify-content: space-around;
     align-items: center;
     height: 300px;
-    width: 1020px;
+    width: 100%;
+    max-width: 1020px;
+    flex-wrap: wrap; /* Allow wrapping for smaller screens */
 }
 
-  
-  .stat-item {
-    flex: 1;
-  }
-  
-  .stat-circle {
+.stat-item {
+    flex: 1 1 200px; /* Flexible width with minimum */
+}
+
+.stat-circle {
     width: 170px;
     height: 160px;
     margin: 0 auto 10px;
@@ -161,14 +163,16 @@
     justify-content: center;
     font-size: 2.2rem;
     font-weight: bold;
-  }
-  .notification-list {
+}
+
+/* NOTIFICATION LIST */
+.notification-list {
     list-style: none;
     padding: 0;
     margin: 0;
-  }
-  
-  .notification-list li {
+}
+
+.notification-list li {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -179,22 +183,22 @@
     border-bottom: 2px solid #CDA274;
     border-radius: 0; 
     background: none;
-  }
-  
-  .notification-input {
+}
+
+.notification-input {
     flex: 1;
     margin-right: 8px;
     border: none;
     background: transparent;
     outline: none;
-  }
-  
-  .line-buttons {
+}
+
+.line-buttons {
     display: flex;
     gap: 4px;
-  }
-  
-  .line-buttons button {
+}
+
+.line-buttons button {
     background: none;
     border: none;
     cursor: pointer;
@@ -202,9 +206,108 @@
     padding: 2px 6px;
     border-radius: 5px;
     transition: background 0.2s;
-  }
-  
-  .line-buttons button:hover {
+}
+
+.line-buttons button:hover {
     background: #ddd;
-  }
-  
+}
+
+/* RESPONSIVE DESIGN */
+@media (max-width: 1200px) {
+    .main-content {
+        margin-left: 60px; /* Reduce sidebar margin */
+        padding: 20px;
+    }
+
+    .stat-card {
+        height: auto; /* Allow height to adjust */
+        padding: 10px;
+    }
+
+    .stat-circle {
+        width: 120px;
+        height: 120px;
+        font-size: 1.8rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .wrapper {
+        flex-direction: column; /* Stack sidebar and content */
+    }
+
+    .main-content {
+        margin-left: 0; /* Remove sidebar margin */
+        padding: 15px;
+    }
+
+    .welcome-title {
+        font-size: 1.5rem;
+    }
+
+    .top-cards {
+        gap: 15px;
+    }
+
+    .card {
+        height: auto; /* Allow cards to adjust height */
+        min-height: 150px;
+        flex: 1 1 100%; /* Full width on small screens */
+    }
+
+    .date-wrapper {
+        flex-direction: column; /* Stack date elements */
+        gap: 10px;
+    }
+
+    .days, .dates {
+        grid-template-columns: repeat(7, 1fr);
+        gap: 5px;
+        font-size: 0.9rem;
+    }
+
+    .stat-card {
+        flex-direction: column; /* Stack stat items */
+        height: auto;
+    }
+
+    .stat-item {
+        margin-bottom: 20px;
+    }
+
+    .stat-circle {
+        width: 100px;
+        height: 100px;
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .main-content {
+        padding: 10px;
+    }
+
+    .welcome-title {
+        font-size: 1.2rem;
+    }
+
+    .card {
+        padding: 15px;
+    }
+
+    .days, .dates {
+        font-size: 0.8rem;
+        gap: 3px;
+    }
+
+    .stat-circle {
+        width: 80px;
+        height: 80px;
+        font-size: 1.2rem;
+    }
+
+    .line-buttons button {
+        font-size: 12px;
+        padding: 2px 4px;
+    }
+}

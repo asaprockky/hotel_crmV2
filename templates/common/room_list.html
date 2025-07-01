@@ -5,132 +5,9 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
     <title>Room Cards</title>
     <link rel="stylesheet" href="{% static 'admin/css/room_list.css' %}" />
-</head>
-<body>
-    
-    <div class="container">
-        {% include 'details/navbar.html' %}
-
-        <div class="col-md-9 main-content">
-            <h1 class="title">List of <span class="highlight">available rooms</span></h1>
-            <!-- Add this above your room container -->
-<div class="filter-container">
-    <form method="get" class="filter-form">
-        <div class="filter-row">
-            <div class="filter-group">
-                <label for="room_type">Room Type:</label>
-                <select name="room_type" id="room_type">
-                    <option value="">All Types</option>
-                    {% for type in room_types %}
-                        <option value="{{ type }}" {% if request.GET.room_type == type %}selected{% endif %}>{{ type }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            
-            <div class="filter-group">
-                <label for="capacity">Guests:</label>
-                <input type="number" name="capacity" id="capacity" min="1" 
-                       value="{{ request.GET.capacity }}" placeholder="Min guests">
-            </div>
-            
-            <div class="filter-group">
-                <label for="air_conditioning">AC:</label>
-                <input type="checkbox" name="air_conditioning" id="air_conditioning" 
-                       {% if request.GET.air_conditioning %}checked{% endif %}>
-            </div>
-        </div>
-        
-        <div class="filter-row">
-            <div class="filter-group">
-                <label for="min_price">Min Price:</label>
-                <input type="number" name="min_price" id="min_price" 
-                       value="{{ request.GET.min_price }}" placeholder="$">
-            </div>
-            
-            <div class="filter-group">
-                <label for="max_price">Max Price:</label>
-                <input type="number" name="max_price" id="max_price" 
-                       value="{{ request.GET.max_price }}" placeholder="$">
-            </div>
-            
-            <div class="filter-group">
-                <label for="room_number">Room #:</label>
-                <input type="text" name="room_number" id="room_number" 
-                       value="{{ request.GET.room_number }}" placeholder="Room number">
-            </div>
-        </div>
-        
-        <div class="filter-row">
-            <div class="filter-group">
-                <label for="check_in">Check-in:</label>
-                <input type="date" name="check_in" id="check_in" 
-                       value="{{ request.GET.check_in }}">
-            </div>
-            
-            <div class="filter-group">
-                <label for="check_out">Check-out:</label>
-                <input type="date" name="check_out" id="check_out" 
-                       value="{{ request.GET.check_out }}">
-            </div>
-            
-            <div class="filter-group">
-                <button type="submit" class="filter-button">Filter</button>
-                <a href="{% url 'room_list' %}" class="reset-button">Reset</a>
-            </div>
-        </div>
-    </form>
-</div>
-
-            <div class="room-container">
-                {% for room in rooms %}
-        <div class="room-card 
-            {% if room.is_available == 'available' %}
-                available
-            {% elif room.is_available == 'reserved' %}
-                reserved
-            {% else %}
-                unavailable
-            {% endif %}">
-            <div class="room-info">
-                <h4>Room №{{ room.room_number }}</h4>
-                <p class="room-type">{{ room.room_type }}</p>
-            </div>
-
-            <div class="room-price 
-                {% if room.is_available == 'available' %}
-                    price-available
-                {% elif room.is_available == 'reserved' %}
-                    price-reserved
-                {% else %}
-                    price-unavailable
-                {% endif %}
-            ">
-                {% if room.is_available == 'available' or room.is_available == "reserved" %}
-                    <a href="{% url 'reserve_room' room.id %}" class="room-price-link">
-                        <p>${{ room.price }} per night</p>
-                    </a>
-                {% else %}
-                    <a href="#" class="room-price-link disabled-link" 
-                    title="Room is unavailable">
-                        <p>${{ room.price }} per night</p>
-                    </a>
-                {% endif %}
-            </div>
-        </div>
-
-                {% endfor %}
-            </div>
-            
-        </div>
-        
-    </div>
-</body>
-</html>
-
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 <style>
 /* Base Styles */
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
@@ -247,6 +124,13 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+.filter-title {
+    color: white;
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    text-align: left;
+}
+
 .filter-form {
     display: flex;
     flex-direction: column;
@@ -282,6 +166,12 @@ body {
     background: rgba(255, 255, 255, 0.9);
 }
 
+.filter-group i {
+    font-size: 1.2rem;
+    color: white;
+    margin-right: 5px;
+}
+
 .filter-button, 
 .reset-button {
     padding: 8px 16px;
@@ -301,6 +191,11 @@ body {
     background-color: #3e8e41;
 }
 
+.filter-button i,
+.reset-button i {
+    margin-right: 5px;
+}
+
 .reset-button {
     background-color: #f44336;
     color: white;
@@ -310,6 +205,13 @@ body {
 
 .reset-button:hover {
     background-color: #d32f2f;
+}
+
+.filter-summary {
+    margin: 20px 100px;
+    color: white;
+    font-size: 1.2rem;
+    text-align: left;
 }
 
 /* Links */
@@ -323,10 +225,31 @@ body {
     height: 100%;
 }
 
-.room-price-link.disabled {
+.room-price-link.disabled-link {
     pointer-events: none;
     cursor: default;
     opacity: 0.6;
+}
+
+/* Status Indicators */
+.status-indicator {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+.status-available {
+    background-color: #2BBE2A;
+}
+
+.status-reserved {
+    background-color: #FFBB33;
+}
+
+.status-unavailable {
+    background-color: #F44842;
 }
 
 /* Responsive */
@@ -356,26 +279,120 @@ body {
     .room-card {
         width: 100%;
     }
-}
-
-/* Status Indicators */
-.status-indicator {
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    margin-right: 5px;
-}
-
-.status-available {
-    background-color: #2BBE2A;
-}
-
-.status-reserved {
-    background-color: #FFBB33;
-}
-
-.status-unavailable {
-    background-color: #F44842;
+    
+    .filter-summary {
+        margin: 20px;
+    }
 }
 </style>
+</head>
+<body>
+    <div class="container">
+        {% include 'details/navbar.html' %}
+        <div class="col-md-9 main-content">
+            <h1 class="title">List of <span class="highlight">available rooms</span></h1>
+            <div class="filter-container">
+                <h2 class="filter-title">Filter Rooms</h2>
+                <form method="get" class="filter-form">
+                    <div class="filter-row">
+                        <div class="filter-group">
+                            <i class="fas fa-bed"></i>
+                            <label for="room_type">Room Type:</label>
+                            <select name="room_type" id="room_type">
+                                <option value="">All Types</option>
+                                {% for type in room_types %}
+                                    <option value="{{ type }}" {% if request.GET.room_type == type %}selected{% endif %}>{{ type }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <i class="fas fa-users"></i>
+                            <label for="capacity">Guests:</label>
+                            <input type="number" name="capacity" id="capacity" min="1" 
+                                   value="{{ request.GET.capacity }}" placeholder="Min guests">
+                        </div>
+                        <div class="filter-group">
+                            <i class="fas fa-snowflake"></i>
+                            <label for="air_conditioning">AC:</label>
+                            <input type="checkbox" name="air_conditioning" id="air_conditioning" 
+                                   {% if request.GET.air_conditioning %}checked{% endif %}>
+                        </div>
+                    </div>
+                    <div class="filter-row">
+                        <div class="filter-group">
+                            <i class="fas fa-dollar-sign"></i>
+                            <label for="min_price">Min Price:</label>
+                            <input type="number" name="min_price" id="min_price" 
+                                   value="{{ request.GET.min_price }}" placeholder="$">
+                        </div>
+                        <div class="filter-group">
+                            <i class="fas fa-dollar-sign"></i>
+                            <label for="max_price">Max Price:</label>
+                            <input type="number" name="max_price" id="max_price" 
+                                   value="{{ request.GET.max_price }}" placeholder="$">
+                        </div>
+                        <div class="filter-group">
+                            <i class="fas fa-hashtag"></i>
+                            <label for="room_number">Room #:</label>
+                            <input type="text" name="room_number" id="room_number" 
+                                   value="{{ request.GET.room_number }}" placeholder="Room number">
+                        </div>
+                    </div>
+                    <div class="filter-row">
+                        <div class="filter-group">
+                            <i class="fas fa-calendar-check"></i>
+                            <label for="check_in">Check-in:</label>
+                            <input type="date" name="check_in" id="check_in" 
+                                   value="{{ request.GET.check_in }}" min="{{ today|date:'Y-m-d' }}">
+                        </div>
+                        <div class="filter-group">
+                            <i class="fas fa-calendar-times"></i>
+                            <label for="check_out">Check-out:</label>
+                            <input type="date" name="check_out" id="check_out" 
+                                   value="{{ request.GET.check_out }}">
+                        </div>
+                        <div class="filter-group">
+                            <button type="submit" class="filter-button"><i class="fas fa-filter"></i> Filter</button>
+                            <a href="{% url 'room_list' %}" class="reset-button"><i class="fas fa-undo"></i> Reset</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="filter-summary">
+                {% if request.GET.check_in and request.GET.check_out %}
+                    <p>Showing rooms available from {{ request.GET.check_in }} to {{ request.GET.check_out }}</p>
+                {% else %}
+                    <p>Showing all rooms matching the filters</p>
+                {% endif %}
+            </div>
+            <div class="room-container">
+                {% for room in rooms %}
+                <div class="room-card 
+                    {% if room.is_available == 'available' %}available
+                    {% elif room.is_available == 'reserved' %}reserved
+                    {% else %}unavailable{% endif %}">
+                    <div class="room-info">
+                        <h4><span class="status-indicator status-{{ room.is_available }}"></span> Room №{{ room.room_number }}</h4>
+                        <p class="room-type">{{ room.room_type }}</p>
+                    </div>
+                    <div class="room-price 
+                        {% if room.is_available == 'available' %}price-available
+                        {% elif room.is_available == 'reserved' %}price-reserved
+                        {% else %}price-unavailable{% endif %}">
+                        {% if request.GET.check_in and request.GET.check_out or room.is_available == 'available' or room.is_available == 'reserved' %}
+                            <a href="{% url 'reserve_room' room.id %}" class="room-price-link">
+                                <p>${{ room.price }} per night</p>
+                            </a>
+                        {% else %}
+                            <a href="#" class="room-price-link disabled-link" title="Room is unavailable">
+                                <p>${{ room.price }} per night</p>
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>

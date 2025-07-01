@@ -21,16 +21,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-%5&-ew6f7ssj3sf-u&ia=4&15v)sqx&ixhw0upy@-$mpb&t!pw'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
-ALLOWED_HOSTS = ['fulstek.uz', 'www.fulstek.uz']
+DEBUG = True
+ALLOWED_HOSTS = ['*'
+]
+# CSRF_TRUSTED_ORIGINS = ['https://fulstek.uz']
+# SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+# SECURE_SSL_REDIRECT = True
 
-
-CSRF_TRUSTED_ORIGINS = ['https://fulstek.uz']
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-SECURE_SSL_REDIRECT = True
-
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
+# CSRF_COOKIE_SECURE = True
+# SESSION_COOKIE_SECURE = True
 
 
 # Application definition
@@ -57,6 +56,7 @@ CRISPY_TEMPLATE_PACK = "bootstrap4"
 LOCAL_APPS = [
     'apps.home',
     'apps.hotel_profiles',
+    'apps.mobile'
 ]
 
 INSTALLED_APPS = DEFAULT_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -129,24 +129,24 @@ USE_TZ = True
 import dj_database_url
 import os
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": "fulstek1_hotel_crm",
-        "USER": "fulstek1_asap",
-        "PASSWORD": "14042005Fayz.",
-        "HOST": "localhost",
-        "PORT": "5432"
-    }
-}
-
-
 # DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
+#     "default": {
+#         "ENGINE": "django.db.backends.postgresql_psycopg2",
+#         "NAME": "fulstek1_hotel_crm",
+#         "USER": "fulstek1_asap",
+#         "PASSWORD": "14042005Fayz.",
+#         "HOST": "localhost",
+#         "PORT": "5432"
 #     }
 # }
+
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
 import os
 STATIC_URL = '/static/'  # Ensure this starts with a forward slash
 
