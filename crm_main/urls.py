@@ -22,7 +22,7 @@ from django.conf.urls.static import static
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns 
 from django.conf import settings
 from django.views.static import serve
-
+import apps
 from django.contrib import admin
 from django.urls import path, include, re_path
 from django.views.generic import TemplateView
@@ -32,6 +32,7 @@ from django.contrib.auth import views as auth_views
 APPEND_SLASH = True
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('mobile/', include('apps.mobile.urls')),
     path("", MainPageView.as_view(), name="main_page"),
     path("main/", MainPageView.as_view(), name="main_page"),
     path('register/', SignUpview.as_view(), name = 'register' ),

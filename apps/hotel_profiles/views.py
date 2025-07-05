@@ -7,10 +7,9 @@ from .models import Reservation, Client, Hotel, TgId, Room, Plan
 from .forms import ReservationForm , EditReservationForm, getTgId, RoomForm
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.timezone import now
-from datetime import timedelta, date
-import datetime
+from datetime import timedelta, date, datetime
 from django.db import transaction
-from django.db.models import Sum, Avg, F 
+from django.db.models import Sum, Avg, F ,Q
 from django.http import HttpResponseForbidden
 from django.views.generic.edit import FormView
 from .bot import send_notification

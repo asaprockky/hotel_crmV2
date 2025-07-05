@@ -59,26 +59,21 @@ class getTgId(forms.ModelForm):
         fields = ['tg_id', 'position']
 
 class RoomForm(forms.ModelForm):
-    ROOM_TYPE_CHOICES = [
-        ('single', 'Single'),
-        ('double', 'Double'),
-        ('suite', 'Suite'),
-    ]
-    room_type = forms.ChoiceField(choices=ROOM_TYPE_CHOICES, widget=forms.Select(attrs={'class': 'form-select'}))
 
     class Meta:
         model = Room
         fields = ['room_number', 'room_type', 'price', 'is_available', 'capacity']
         widgets = {
+            'room_type' : forms.TextInput(attrs={'class': 'form-control'}),
             'room_number': forms.TextInput(attrs={'class': 'form-control'}),
-            'price': forms.NumberInput(attrs={'class': 'form-control', 'step': '1000'}),
-            'capacity': forms.NumberInput(attrs={'class': 'form-control', 'step': '2'}),
+            'price': forms.NumberInput(attrs={'class': 'form-control', 'step': '100'}),
+            'capacity': forms.NumberInput(attrs={'class': 'form-control', 'step': '1'}),
             'is_available': forms.Select(attrs={'class': 'form-select'}),
         }
 
     def clean_room_number(self):
         room_number = self.cleaned_data['room_number']
-        if len(room_number) > 6:
+        if len(str(room_number)) > 6:
             raise forms.ValidationError("Room number cannot exceed 6 characters.")
         return room_number
 
