@@ -108,7 +108,7 @@ class ReservationCreateView(LoginRequiredMixin, CreateView):
         for check_in, check_out in reservations:
             # loop over the span of each booking (inclusive of check_out)
             for n in range((check_out - check_in).days + 1):
-                reserved.add((check_in + datetime.timedelta(days=n)).isoformat())
+                reserved.add((check_in + timedelta(days=n)).isoformat())
 
         return sorted(reserved)
     def get_context_data(self, **kwargs):
@@ -336,43 +336,32 @@ class CloseRoomCommand(View):
             )
 
             client.balance = 0
-            room.is_available = "available"
+            
 
             reservation.save()
             client.save()
-            room.save()
+            
+            room_id = reservation.room_id
             Reservation.objects.filter(id = reservation.id).delete()
+            res = Reservation.objects.filter(room_id =room_id ).first()
+            if res:
+                status = res.status
+                room.is_available = status.lower()
+                print(status)
+                room.save()
+            else:
+                print(f'{room.room_number} is changing')
+                room.is_available = "available"
+                room.save()
+
         profit = client.balance
         self.send_message_to_boss(reservation,profit, days_stayed)
         print("Room closed successfully.")
+
         return render(request, 'details/close_room_success.html', {'room': room})
 
 
-PASSCODE = '1234'
 
-class EnterPasscodeView(TemplateView):
-    
-    def get(self, request):
-        template = "details/enter_pass.html"
-        hotel = request.user.hotel
-        if hotel.plan == "basic":
-            return render(request, "details/plan_popup.html", {"show_popup": True})
-        
-        return render(request, template_name = template)
-
-    
-
-class VerifyPasscodeView(View):
-    def post(self, request, *args, **kwargs):
-        entered_passcode = request.POST.get('passcode')
-
-        if entered_passcode == PASSCODE:
-            # Store passcode validation state in session for this session
-            request.session['is_passcode_valid'] = True
-            request.session.set_expiry(200)
-            return redirect('stats')  # Redirect to stats page after correct passcode
-        else:
-            return HttpResponseForbidden("Incorrect passcode. Please try again.")
         
 class StatsView(LoginRequiredMixin, View):
     def get(self, request):

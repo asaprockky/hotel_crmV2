@@ -131,6 +131,7 @@ class Reservation(models.Model):
                 self.status = 'unavailable'
                 self.room.is_available = 'unavailable'
                 self.room.save()
+                
             elif self.check_in > today:
                 self.status = 'reserved'
                 self.room.is_available = 'reserved'

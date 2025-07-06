@@ -379,15 +379,9 @@ body {
                         {% if room.is_available == 'available' %}price-available
                         {% elif room.is_available == 'reserved' %}price-reserved
                         {% else %}price-unavailable{% endif %}">
-                        {% if request.GET.check_in and request.GET.check_out or room.is_available == 'available' or room.is_available == 'reserved' %}
                             <a href="{% url 'reserve_room' room.id %}" class="room-price-link">
                                 <p>${{ room.price }} per night</p>
                             </a>
-                        {% else %}
-                            <a href="#" class="room-price-link disabled-link" title="Room is unavailable">
-                                <p>${{ room.price }} per night</p>
-                            </a>
-                        {% endif %}
                     </div>
                 </div>
                 {% endfor %}

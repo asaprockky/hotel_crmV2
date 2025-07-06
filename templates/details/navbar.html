@@ -35,7 +35,7 @@
             </a>
           </li>
           <li>
-            <a href="/enter-passcode" class="{% if request.path == '/enter-passcode' %}active{% endif %}">
+            <a href="{% url 'stats' %}" class="{% if request.path == '/enter-passcode' %}active{% endif %}">
               <img src="{% static 'admin/img/stats_icon.png' %}" alt="" class="icon"/>
               Finance
             </a>
