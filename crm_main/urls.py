@@ -27,7 +27,7 @@ from django.contrib import admin
 from django.urls import path, include, re_path
 from django.views.generic import TemplateView
 from apps.home.views import SignUpview, MainPageView, SettingsView, RegisterRoomView
-from apps.hotel_profiles.views import ShowRoomsView,RoomListView, PaymentView, EditReservationView, ReservationCreateView, ShowReservedRoomView, ShowReservedRooms,RoomEditView, CloseRoomCommand,AddTgFormView, StatsView
+from apps.hotel_profiles.views import ShowRoomsView,RoomListView, EditStaffView, PaymentView, EditReservationView, ReservationCreateView, ShowReservedRoomView, ShowReservedRooms,RoomEditView, CloseRoomCommand,AddTgFormView, StatsView
 from django.contrib.auth import views as auth_views
 APPEND_SLASH = True
 urlpatterns = [
@@ -51,6 +51,7 @@ urlpatterns = [
     path('rooms/<int:room_id>/edit/', RoomEditView.as_view(), name='edit_room'),
     path('rooms/', RoomListView.as_view(), name='edit_room_list'),
     path('payment/', PaymentView.as_view(), name='payment'),
+    path('edit_staff/', EditStaffView.as_view(), name='edit_staff'),
     re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
     re_path(r'^static/(?P<path>.*)$', serve, {'document_root': settings.STATIC_ROOT})
 ]

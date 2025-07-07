@@ -380,7 +380,7 @@ body {
                         {% elif room.is_available == 'reserved' %}price-reserved
                         {% else %}price-unavailable{% endif %}">
                             <a href="{% url 'reserve_room' room.id %}" class="room-price-link">
-                                <p>${{ room.price }} per night</p>
+                                <p>{{ room.price }} per night</p>
                             </a>
                     </div>
                 </div>

@@ -510,3 +510,10 @@ class PaymentView(LoginRequiredMixin, View):
         else:
             print('wewew')
             return JsonResponse({'error' : 'Balansda yetarli mablag mavjud emas'}, status = 400)
+        
+
+    
+class EditStaffView(LoginRequiredMixin, View):
+    template_name = 'common/edit_staff.html'
+    def get(self, request):
+        return render(self.request, self.template_name)
